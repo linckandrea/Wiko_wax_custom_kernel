@@ -28,6 +28,9 @@ config HAS_WAKELOCK
 	  module holding wake_lock is active with some task.
 	  If in doubt, enable CONFIG_WAKELOCK too.
 
+config HAS_EARLYSUSPEND
+	bool
+
 config WAKELOCK
 	bool "Wakelock"
 	default y
@@ -37,6 +40,15 @@ config WAKELOCK
 	  Wake_lock has options to stop the system from suspending if a
 	  module holding wake_lock is active with some task.
 	  If in doubt, enable CONFIG_HAS_WAKELOCK too.
+
+config EARLYSUSPEND
+	bool "Early suspend"
+	depends on WAKELOCK
+	default y
+	select HAS_EARLYSUSPEND
+	---help---
+	  Call early suspend handlers when the user requested sleep state
+	  changes.
 
 config HIBERNATE_CALLBACKS
 	bool
