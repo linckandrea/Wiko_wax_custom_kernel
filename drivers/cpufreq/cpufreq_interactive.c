@@ -1145,7 +1145,11 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 			down_write(&pcpu->enable_sem);
 			del_timer_sync(&pcpu->cpu_timer);
 			del_timer_sync(&pcpu->cpu_slack_timer);
+<<<<<<< HEAD
 			cpufreq_interactive_timer_start(j);
+=======
+			cpufreq_interactive_timer_start(tunables, j);
+>>>>>>> b430123... cpufreq: interactive: delete timers for GOV_START
 			pcpu->governor_enabled = 1;
 			up_write(&pcpu->enable_sem);
 		}
