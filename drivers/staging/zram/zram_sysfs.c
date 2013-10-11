@@ -56,22 +56,26 @@ static ssize_t disksize_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t len)
 {
 	u64 disksize;
+	struct zram_meta *meta;
 	struct zram *zram = dev_to_zram(dev);
 
 	disksize = memparse(buf, NULL);
 	if (!disksize)
 		return -EINVAL;
 
+	disksize = PAGE_ALIGN(disksize);
+	meta = zram_meta_alloc(disksize);
 	down_write(&zram->init_lock);
 	if (zram->init_done) {
 		up_write(&zram->init_lock);
+		zram_meta_free(meta);
 		pr_info("Cannot change disksize for initialized device\n");
 		return -EBUSY;
 	}
 
-	zram->disksize = PAGE_ALIGN(disksize);
+	zram->disksize = disksize;
 	set_capacity(zram->disk, zram->disksize >> SECTOR_SHIFT);
-	zram_init_device(zram);
+	zram_init_device(zram, meta);
 	up_write(&zram->init_lock);
 
 	return len;
@@ -96,23 +100,34 @@ static ssize_t reset_store(struct device *dev,
 	zram = dev_to_zram(dev);
 	bdev = bdget_disk(zram->disk, 0);
 
+	if (!bdev)
+		return -ENOMEM;
+
 	/* Do not reset an active device! */
-	if (bdev->bd_holders)
-		return -EBUSY;
+	if (bdev->bd_holders) {
+		ret = -EBUSY;
+		goto out;
+	}
 
 	ret = kstrtou16(buf, 10, &do_reset);
 	if (ret)
-		return ret;
+		goto out;
 
-	if (!do_reset)
-		return -EINVAL;
+	if (!do_reset) {
+		ret = -EINVAL;
+		goto out;
+	}
 
 	/* Make sure all pending I/O is finished */
-	if (bdev)
-		fsync_bdev(bdev);
+	fsync_bdev(bdev);
+	bdput(bdev);
 
 	zram_reset_device(zram);
 	return len;
+
+out:
+	bdput(bdev);
+	return ret;
 }
 
 static ssize_t num_reads_show(struct device *dev,
@@ -182,11 +197,10 @@ static ssize_t mem_used_total_show(struct device *dev,
 {
 	u64 val = 0;
 	struct zram *zram = dev_to_zram(dev);
+	struct zram_meta *meta = zram->meta;
 
-	if (zram->init_done) {
-		val = zs_get_total_size_bytes(zram->mem_pool) +
-			((u64)(zram->stats.pages_expand) << PAGE_SHIFT);
-	}
+	if (zram->init_done)
+		val = zs_get_total_size_bytes(meta->mem_pool);
 
 	return sprintf(buf, "%llu\n", val);
 }
