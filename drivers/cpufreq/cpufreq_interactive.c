@@ -152,8 +152,14 @@ static inline cputime64_t get_cpu_idle_time(unsigned int cpu,
 	else if (!io_is_busy)
 		idle_time += get_cpu_iowait_time_us(cpu, wall);
 
+<<<<<<< HEAD
 	return idle_time;
 }
+=======
+struct cpufreq_interactive_tunables global_tunables;
+
+static struct attribute_group *get_sysfs_attr(void);
+>>>>>>> 8dce880... cpufreq: Interactive: make cpufreq_interactive_tunables global
 
 static void cpufreq_interactive_timer_resched(
 	struct cpufreq_interactive_cpuinfo *pcpu)
@@ -1066,6 +1072,55 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 	struct cpufreq_frequency_table *freq_table;
 
 	switch (event) {
+<<<<<<< HEAD
+=======
+	case CPUFREQ_GOV_POLICY_INIT:
+		if (have_governor_per_policy()) {
+			WARN_ON(tunables);
+		} else if (tunables) {
+			tunables->usage_count++;
+			policy->governor_data = tunables;
+			return 0;
+		}
+
+		tunables = &global_tunables;
+
+		rc = sysfs_create_group(get_governor_parent_kobj(policy),
+				get_sysfs_attr());
+		if (rc)
+			return rc;
+
+		tunables->usage_count = 1;
+
+		if (!policy->governor->initialized) {
+			idle_notifier_register(&cpufreq_interactive_idle_nb);
+			cpufreq_register_notifier(&cpufreq_notifier_block,
+					CPUFREQ_TRANSITION_NOTIFIER);
+		}
+
+		policy->governor_data = tunables;
+		if (!have_governor_per_policy())
+			common_tunables = tunables;
+
+		break;
+
+	case CPUFREQ_GOV_POLICY_EXIT:
+		if (!--tunables->usage_count) {
+			if (policy->governor->initialized == 1) {
+				cpufreq_unregister_notifier(&cpufreq_notifier_block,
+						CPUFREQ_TRANSITION_NOTIFIER);
+				idle_notifier_unregister(&cpufreq_interactive_idle_nb);
+			}
+
+			sysfs_remove_group(get_governor_parent_kobj(policy),
+					get_sysfs_attr());
+			common_tunables = NULL;
+		}
+
+		policy->governor_data = NULL;
+		break;
+
+>>>>>>> 8dce880... cpufreq: Interactive: make cpufreq_interactive_tunables global
 	case CPUFREQ_GOV_START:
 		if (!cpu_online(policy->cpu))
 			return -EINVAL;
@@ -1200,6 +1255,7 @@ static int __init cpufreq_interactive_init(void)
 	unsigned int i;
 	struct cpufreq_interactive_cpuinfo *pcpu;
 	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
+	struct cpufreq_interactive_tunables *tunables = &global_tunables;
 
 	/* Initalize per-cpu timers */
 	for_each_possible_cpu(i) {
@@ -1214,6 +1270,20 @@ static int __init cpufreq_interactive_init(void)
 	}
 
 	spin_lock_init(&target_loads_lock);
+	tunables->above_hispeed_delay = default_above_hispeed_delay;
+	tunables->nabove_hispeed_delay =
+			ARRAY_SIZE(default_above_hispeed_delay);
+	tunables->go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
+	tunables->target_loads = default_target_loads;
+	tunables->ntarget_loads = ARRAY_SIZE(default_target_loads);
+	tunables->min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
+	tunables->timer_rate = DEFAULT_TIMER_RATE;
+	tunables->boostpulse_duration_val = DEFAULT_MIN_SAMPLE_TIME;
+	tunables->timer_slack_val = DEFAULT_TIMER_SLACK;
+
+	spin_lock_init(&tunables->target_loads_lock);
+	spin_lock_init(&tunables->above_hispeed_delay_lock);
+
 	spin_lock_init(&speedchange_cpumask_lock);
 	spin_lock_init(&above_hispeed_delay_lock);
 	mutex_init(&gov_lock);
