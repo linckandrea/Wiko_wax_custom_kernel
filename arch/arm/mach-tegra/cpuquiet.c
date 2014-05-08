@@ -3,7 +3,7 @@
  *
  * Cpuquiet driver for Tegra CPUs
  *
- * Copyright (c) 2012-2013 NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2012-2014, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,13 +66,21 @@ static wait_queue_head_t wait_cpu;
  */
 static int no_lp;
 static bool enable;
+<<<<<<< HEAD
+=======
+static unsigned int idle_bottom_freq;
+#ifdef CONFIG_TEGRA_CLUSTER_CONTROL
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 static unsigned long up_delay;
 static unsigned long down_delay;
 static unsigned long hotplug_timeout;
 static int mp_overhead = 10;
 static unsigned int idle_top_freq;
+<<<<<<< HEAD
 static unsigned int idle_bottom_freq;
 
+=======
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 static struct clk *cpu_clk;
 static struct clk *cpu_g_clk;
 static struct clk *cpu_lp_clk;
@@ -242,6 +250,11 @@ static void __update_target_cluster(unsigned int cpu_freq, bool suspend)
 	}
 }
 
+#else
+static inline void __update_target_cluster(unsigned int cpu_freq, bool suspend)
+{ }
+#endif
+
 static int update_core_config(unsigned int cpunumber, bool up)
 {
 	int ret = 0;
@@ -253,7 +266,6 @@ static int update_core_config(unsigned int cpunumber, bool up)
 		mutex_unlock(tegra_cpu_lock);
 		return -EINVAL;
 	}
-
 
 	if (up) {
 		cpumask_set_cpu(cpunumber, &cr_online_requests);
@@ -514,21 +526,48 @@ static int max_cpus_notify(struct notifier_block *nb, unsigned long n, void *p)
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_TEGRA_CLUSTER_CONTROL
+/* Must be called with tegra_cpu_lock held */
+static void __idle_stop_governor(unsigned int freq)
+{
+	if (cpq_state == TEGRA_CPQ_DISABLED)
+		return;
+
+	if (freq <= idle_bottom_freq && num_online_cpus() == 1)
+		cpuquiet_device_busy();
+	else
+		cpuquiet_device_free();
+}
+#endif
+
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 static int __cpuinit cpu_online_notify(struct notifier_block *nfb,
 					unsigned long action, void *hcpu)
 {
+	unsigned int freq;
+
 	switch (action) {
 	case CPU_POST_DEAD:
 		if (num_online_cpus() == 1) {
 			mutex_lock(tegra_cpu_lock);
-			__update_target_cluster(tegra_getspeed(0), false);
+			freq = tegra_getspeed(0);
+			__update_target_cluster(freq, false);
+#ifndef CONFIG_TEGRA_CLUSTER_CONTROL
+			__idle_stop_governor(freq);
+#endif
 			mutex_unlock(tegra_cpu_lock);
 		}
 		break;
 	case CPU_ONLINE:
 	case CPU_ONLINE_FROZEN:
 		mutex_lock(tegra_cpu_lock);
-		__update_target_cluster(tegra_getspeed(0), false);
+		freq = tegra_getspeed(0);
+		__update_target_cluster(freq, false);
+#ifndef CONFIG_TEGRA_CLUSTER_CONTROL
+		__idle_stop_governor(freq);
+#endif
 		mutex_unlock(tegra_cpu_lock);
 		break;
 	}
@@ -536,6 +575,7 @@ static int __cpuinit cpu_online_notify(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+#ifdef CONFIG_TEGRA_CLUSTER_CONTROL
 /* must be called with tegra_cpu_lock held */
 void tegra_auto_hotplug_governor(unsigned int cpu_freq, bool suspend)
 {
@@ -559,7 +599,20 @@ void tegra_auto_hotplug_governor(unsigned int cpu_freq, bool suspend)
 
 	__update_target_cluster(cpu_freq, suspend);
 }
+#else
+void tegra_auto_hotplug_governor(unsigned int cpu_freq, bool suspend)
+{
+	__idle_stop_governor(cpu_freq);
+}
+#endif
 
+<<<<<<< HEAD
+=======
+static struct notifier_block __cpuinitdata cpu_online_notifier = {
+	.notifier_call = cpu_online_notify,
+};
+
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 static struct notifier_block min_cpus_notifier = {
 	.notifier_call = min_cpus_notify,
 };
@@ -638,11 +691,18 @@ ssize_t store_no_lp(struct cpuquiet_attribute *attr,
 }
 
 CPQ_BASIC_ATTRIBUTE(idle_top_freq, 0644, uint);
+<<<<<<< HEAD
 CPQ_BASIC_ATTRIBUTE(idle_bottom_freq, 0644, uint);
 CPQ_BASIC_ATTRIBUTE(mp_overhead, 0644, int);
 CPQ_ATTRIBUTE_CUSTOM(no_lp, 0644, show_int_attribute, store_no_lp);
 CPQ_ATTRIBUTE(up_delay, 0644, ulong, delay_callback);
 CPQ_ATTRIBUTE(down_delay, 0644, ulong, delay_callback);
+=======
+CPQ_ATTRIBUTE(up_delay, 0644, ulong, delay_callback);
+CPQ_ATTRIBUTE(down_delay, 0644, ulong, delay_callback);
+#endif
+CPQ_BASIC_ATTRIBUTE(idle_bottom_freq, 0644, uint);
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 CPQ_ATTRIBUTE(hotplug_timeout, 0644, ulong, delay_callback);
 CPQ_ATTRIBUTE(enable, 0644, bool, enable_callback);
 
@@ -651,8 +711,13 @@ static struct attribute *tegra_auto_attributes[] = {
 	&up_delay_attr.attr,
 	&down_delay_attr.attr,
 	&idle_top_freq_attr.attr,
+<<<<<<< HEAD
 	&idle_bottom_freq_attr.attr,
 	&mp_overhead_attr.attr,
+=======
+#endif
+	&idle_bottom_freq_attr.attr,
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 	&enable_attr.attr,
 	&hotplug_timeout_attr.attr,
 	NULL,
@@ -827,6 +892,13 @@ int __cpuinit tegra_auto_hotplug_init(struct mutex *cpulock)
 			__func__);
 
 	register_hotcpu_notifier(&cpu_online_notifier);
+<<<<<<< HEAD
+=======
+
+#ifndef CONFIG_TEGRA_CLUSTER_CONTROL
+	idle_bottom_freq = 714000;
+#endif
+>>>>>>> ef591a1... ARM: tegra: Disable cpuquiet governor when idle
 
 	err = cpuquiet_register_driver(&tegra_cpuquiet_driver);
 	if (err) {
