@@ -270,6 +270,7 @@ mmc_start_request(struct mmc_host *host, struct mmc_request *mrq)
 			mutex_unlock(&host->df->lock);
 			host->dev_stats->update_dev_freq = false;
 		}
+
 		host->dev_stats->t_busy = ktime_get();
 	}
 #endif
