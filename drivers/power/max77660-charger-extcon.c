@@ -44,7 +44,7 @@
 #include <linux/timer.h>
 #include <linux/power_supply.h>
 #include <linux/power/battery-charger-gauge-comm.h>
-#include <../../arch/arm/mach-tegra/board.h>
+#include "../../arch/arm/mach-tegra/board.h"
 
 #define CHARGER_USB_EXTCON_REGISTRATION_DELAY	5000
 #define CHARGER_TYPE_DETECTION_DEBOUNCE_TIME_MS	500

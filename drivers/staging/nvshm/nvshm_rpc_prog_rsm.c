@@ -22,8 +22,8 @@
 #include <linux/slab.h>
 #include <mach/tegra_bb.h>
 #include <mach/tegra_bbc_proxy.h>
-#include <nvshm_rpc_utils.h>
-#include <nvshm_rpc_dispatcher.h>
+#include "nvshm_rpc_utils.h"
+#include "nvshm_rpc_dispatcher.h"
 
 #define RSM_FLAGS_MODE_NOT_2G		BIT(1)
 
