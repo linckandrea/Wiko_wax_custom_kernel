@@ -16,7 +16,7 @@
 
 #define pr_fmt(fmt) "%s:" fmt, __func__
 
-#include <nvshm_rpc_utils.h>
+#include "nvshm_rpc_utils.h"
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/printk.h>
