@@ -1158,12 +1158,10 @@ static int __devinit tegra30_dam_probe(struct platform_device *pdev)
 	tegra30_dam_enable_clock(pdev->id);
 
 	for (i = 0; i <= TEGRA30_DAM_CTRL_REGINDEX; i++) {
-		if ((i == TEGRA30_DAM_CTRL_RSVD_6) ||
-			(i == TEGRA30_DAM_CTRL_RSVD_10))
+		if ((i == TEGRA30_DAM_CTRL_RSVD_6) || (i == TEGRA30_DAM_CTRL_RSVD_10))
 			continue;
 
-			dam->reg_cache[i] =
-				tegra30_dam_readl(dam, i << 2);
+		dam->reg_cache[i] = tegra30_dam_readl(dam, i << 2);
 	}
 
 	tegra30_dam_disable_clock(pdev->id);
