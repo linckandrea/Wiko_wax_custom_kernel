@@ -142,6 +142,7 @@ obj-$(CONFIG_ARCH_TEGRA_11x_SOC)        += pinmux-t11-tables.o
 obj-$(CONFIG_ARCH_TEGRA_14x_SOC)        += pinmux-t14-tables.o
 obj-$(CONFIG_HOTPLUG_CPU)               += hotplug.o
 obj-$(CONFIG_ASMP)		+= autosmp.o 
+CFLAGS_autosmp.o  = -Wno-error
 obj-y                                   += pmc.o
 obj-y                                   += flowctrl.o
 obj-$(CONFIG_CPU_IDLE)                  += cpuidle.o
