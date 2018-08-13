@@ -601,7 +601,7 @@ endif
 endif
 
 ifdef CONFIG_DEBUG_INFO
-KBUILD_CFLAGS	+= -g
+KBUILD_CFLAGS	+= -g0
 KBUILD_AFLAGS	+= -gdwarf-2
 endif
 
