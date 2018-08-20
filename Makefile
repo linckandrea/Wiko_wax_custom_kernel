@@ -369,6 +369,11 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks
+
+KBUILD_CFLAGS   += $(call cc-disable-warning,unused-function,)
+KBUILD_CFLAGS   += $(call cc-disable-warning,aggressive-loop-optimizations,)
+KBUILD_CFLAGS   += $(call cc-disable-warning,implicit-function-declaration,)
+
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
