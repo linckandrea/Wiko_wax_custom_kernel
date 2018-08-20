@@ -717,17 +717,14 @@ struct tegra_dc_win *tegra_dc_get_window(struct tegra_dc *dc, unsigned win);
 bool tegra_dc_get_connected(struct tegra_dc *);
 bool tegra_dc_hpd(struct tegra_dc *dc);
 
-
 void tegra_dc_get_fbvblank(struct tegra_dc *dc, struct fb_vblank *vblank);
 int tegra_dc_wait_for_vsync(struct tegra_dc *dc);
 void tegra_dc_blank(struct tegra_dc *dc);
 void tegra_dc_unblank(struct tegra_dc *dc);
 
-
 void tegra_dc_enable(struct tegra_dc *dc);
 void tegra_dc_disable(struct tegra_dc *dc);
 int tegra_dc_set_default_videomode(struct tegra_dc *dc);
-
 
 u32 tegra_dc_get_syncpt_id(const struct tegra_dc *dc, int i);
 u32 tegra_dc_incr_syncpt_max(struct tegra_dc *dc, int i);

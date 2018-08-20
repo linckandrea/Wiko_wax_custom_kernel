@@ -379,7 +379,7 @@ static int inv_suspend_akm(struct inv_mpu_state *st)
 	int result;
 	u8 mode,data;
 	
-	printk("Ivan AKM inv_suspend_akm \n");
+	printk("AKM inv_suspend_akm \n");
 	/* set to bypass mode */
 	result = inv_i2c_single_write(st, REG_INT_PIN_CFG,
 				st->plat_data.int_config | BIT_BYPASS_EN);
@@ -387,7 +387,7 @@ static int inv_suspend_akm(struct inv_mpu_state *st)
 	mode = REG_AKM_MODE;
 	
 	result = inv_secondary_read(mode, 1, &data);
-	printk("Ivan AKM CNTL1[%x] \n", data);
+	printk("AKM CNTL1[%x] \n", data);
 	
 	/* set to power down mode */
 	result = inv_secondary_write(mode, DATA_AKM_MODE_PD);	
@@ -405,6 +405,7 @@ static int inv_suspend_akm(struct inv_mpu_state *st)
 		return result;
 	/* slave 1 is disabled */
 	result = inv_i2c_single_write(st, REG_I2C_SLV1_CTRL, 0);
+
 	return result;
 }
 
@@ -412,7 +413,7 @@ static int inv_resume_akm(struct inv_mpu_state *st)
 {
 	int result;
 	u8 reg_addr, bytes;
-	printk("Ivan AKM inv_resume_akm \n");
+	printk("AKM inv_resume_akm \n");
 
 	/* slave 0 is used to read data from compass */
 	/*read mode */

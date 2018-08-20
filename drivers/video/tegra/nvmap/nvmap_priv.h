@@ -414,10 +414,10 @@ static inline int tegra_iommu_vm_insert_pages(struct tegra_iommu_area *area,
 	const struct dma_map_ops *ops = get_dma_ops(dev);
 	DEFINE_DMA_ATTRS(attrs);
 
-	if (!(area->flags & TEGRA_IOMMU_IOVA) ||
-		    (area->flags & TEGRA_IOMMU_MAP)) {
+	if (WARN_ON(!(area->flags & TEGRA_IOMMU_IOVA) ||
+		    (area->flags & TEGRA_IOMMU_MAP))) {
 		pr_err("%s(): area flags: %08x\n", __func__, area->flags);
-		return 0;
+		return -EINVAL;
 	}
 
 	dma_set_attr(DMA_ATTR_SKIP_CPU_SYNC, &attrs);

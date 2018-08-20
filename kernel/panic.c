@@ -39,10 +39,7 @@ static DEFINE_SPINLOCK(pause_on_oops_lock);
 #ifndef CONFIG_PANIC_TIMEOUT
 #define CONFIG_PANIC_TIMEOUT 0
 #endif
-
-//Ivan force to 10s
-//int panic_timeout = CONFIG_PANIC_TIMEOUT;
-int panic_timeout = 10;
+int panic_timeout = CONFIG_PANIC_TIMEOUT;
 EXPORT_SYMBOL_GPL(panic_timeout);
 
 ATOMIC_NOTIFIER_HEAD(panic_notifier_list);

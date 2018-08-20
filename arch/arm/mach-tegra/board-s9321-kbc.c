@@ -128,7 +128,7 @@ int __init ceres_keys_init(void)
 
 	if ((bi.board_id == BOARD_E1670) || (bi.board_id == BOARD_E1680) ||
 		 (bi.board_id == BOARD_E1671) || (bi.board_id == BOARD_E1740)) {
-		 #if 0 //ljs s9321
+#if 0 //ljs s9321
 		ceres_int_keys[3].gpio = TEGRA_GPIO_PJ4;
 		ceres_int_keys[3].active_low = 1;
 		ceres_int_keys[3].debounce_interval = 30;

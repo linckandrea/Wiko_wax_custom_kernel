@@ -865,20 +865,13 @@ out:
  */
 void _nvmap_free(struct nvmap_client *client, struct nvmap_handle_ref *r)
 {
-#if 0
 	int dupes;
 	struct nvmap_handle *h = r->handle;
-#else
-	int dupes;
-	struct nvmap_handle *h = NULL;
-#endif
 
 	if (!r ||
 	    WARN_ON(!virt_addr_valid(client)) ||
 	    WARN_ON(!virt_addr_valid(r)))
 		return;
-
-	h = r->handle;
 
 	nvmap_ref_lock(client);
 retry:

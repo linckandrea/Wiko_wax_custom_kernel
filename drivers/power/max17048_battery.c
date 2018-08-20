@@ -2,7 +2,7 @@
  *  max17048_battery.c
  *  fuel-gauge systems for lithium-ion (Li+) batteries
  *
- * Copyright (c) 2012-2013, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2012-2014, NVIDIA CORPORATION.  All rights reserved.
  *  Chandler Zhang <chazhang@nvidia.com>
  *  Syed Rafiuddin <srafiuddin@nvidia.com>
  *

@@ -30,6 +30,15 @@ config BCM4350
 	bool "Broadcom 4350 wireless card support"
 	depends on BCMDHD
 
+config BCMDHD_5GHZ_SUPPORT
+	bool "Broadcom 5Ghz band support"
+	depends on BCMDHD
+	default n
+	---help---
+	  Enable 5Ghz band support for Broadcom devices. This feature is disabled
+	  by default. If you enable it, your device will work with 2.4Ghz and 5Ghz
+	  if the device support them, otherwise, it will work only with 2.4Ghz.
+
 config BCMDHD_FW_PATH
 	depends on BCMDHD
 	string "Firmware path"

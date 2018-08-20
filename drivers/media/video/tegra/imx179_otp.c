@@ -172,7 +172,7 @@ int IMX179_ReadAfinfFromOtp(struct imx179_info *info)
 //iBuffer:the return data buffer
 //buffersize: buffer size
 int IMX179_ReadOtp(struct imx179_info *info, u16 tempbank, u16 address,
-		   u8 * iBuffer, u16 buffersize)
+		   		   u8 * iBuffer, u16 buffersize)
 {
 	int i;
 	u8 reVal;

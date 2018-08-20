@@ -26,7 +26,6 @@
 #include <linux/mfd/max77660/max77660-core.h>
 #include "gpio-names.h"
 
-//Ivan added
 #define TINNO_TP_2_CAM
 
 /* MAX77660_GPIO Base Address */
@@ -53,21 +52,16 @@
 #define CAM_AF_PWDN			TEGRA_GPIO_PS4
 #define CAM_TORCH_EN			TEGRA_GPIO_PS5
 
-
-//luis
 //definitions for tinno
 #if (CONFIG_S8515_PR_VERSION == 2)
 #define CAM_RSTN_TINNO			TEGRA_GPIO_PS2
-//#define CAM_FLASH_STROBE		TEGRA_GPIO_PS1
 #define CAM_PWDN_TINNO  		TEGRA_GPIO_PS2
 #else
 #define CAM_RSTN_TINNO			TEGRA_GPIO_PS0
-//#define CAM_FLASH_STROBE		TEGRA_GPIO_PS1
 #define CAM_PWDN_TINNO  		TEGRA_GPIO_PS2
 #endif
-//#define CAM2_POWER_DWN_GPIO		TEGRA_GPIO_PS3
+
 #define CAM_CHOS_TINNO			TEGRA_GPIO_PS4
-//#define CAM_TORCH_EN			TEGRA_GPIO_PS5
 
 /* Touchscreen definitions */
 #define SYNAPTICS_ATTN_GPIO		TEGRA_GPIO_PN1
@@ -76,9 +70,7 @@
 #define TOUCH_GPIO_IRQ_RAYDIUM_SPI	TEGRA_GPIO_PN1
 #define TOUCH_GPIO_RST_RAYDIUM_SPI	TEGRA_GPIO_PN2
 
-//Ivan
 #define SYN_320X_ADDR			0x72 >> 1
-
 
 /* Audio-related GPIOs */
 #define TEGRA_GPIO_CDC_IRQ		TEGRA_GPIO_PO5
@@ -104,11 +96,8 @@
 #define MPU_COMPASS_ADDR		0x0D
 #define MPU_COMPASS_BUS_NUM		0
 #define MPU_COMPASS_ORIENTATION		{ 1, 0, 0, 0, -1, 0, 0, 0, -1 }
-//#define MPU_COMPASS_ORIENTATION_E1680	{ 0, -1, 0, -1, 0, 0, 0, 0, -1 }
-//#define MPU_ACCE_ORIENTATION_E1680	{ -1, 0, 0, 0, -1, 0, 0, 0, 1 }
 #define MPU_COMPASS_ORIENTATION_E1680	MTMAT_BOT_CCW_270
 
-//#define MPU_COMPASS_ORIENTATION_E1680	MTMAT_TOP_CCW_270
 #define MPU_ACCE_ORIENTATION_E1680	MTMAT_TOP_CCW_270
 
 /* PCA954x I2C bus expander bus addresses */

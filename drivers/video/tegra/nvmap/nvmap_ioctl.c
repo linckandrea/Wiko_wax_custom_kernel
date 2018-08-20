@@ -3,7 +3,7 @@
  *
  * User-space interface to nvmap
  *
- * Copyright (c) 2011-2013, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2011-2014, NVIDIA CORPORATION. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1093,6 +1093,12 @@ static int cache_maint(struct nvmap_client *client,
 		cache_op = (struct cache_maint_op *)
 				kmalloc(sizeof(struct cache_maint_op),
 					GFP_KERNEL);
+
+		if (!cache_op) {
+			pr_err("%s OOM for cache_maint_op\n", __func__);
+			return -ENOMEM;
+		}
+
 		cache_op->h = h;
 		cache_op->start = start;
 		cache_op->end = end;

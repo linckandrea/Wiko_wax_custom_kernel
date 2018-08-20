@@ -2,7 +2,7 @@
  * battery-charger-gauge-comm.c -- Communication between battery charger and
  *	battery gauge driver.
  *
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2013-2014, NVIDIA CORPORATION.  All rights reserved.
  *
  * Author: Laxman Dewangan <ldewangan@nvidia.com>
  *
@@ -162,7 +162,7 @@ static void battery_charger_thermal_monitor_wq(struct work_struct *work)
 #if (CONFIG_MACH_S9321 == 1)
 	battery_thersold_voltage = 4400;	
 #else	
-	battery_thersold_voltage = 4250;
+	battery_thersold_voltage = 4200;
 #endif
 
 #ifdef CONFIG_MACH_S9321

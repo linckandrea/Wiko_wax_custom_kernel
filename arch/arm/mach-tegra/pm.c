@@ -931,8 +931,6 @@ static int tegra_common_suspend(void)
 				(pdata->core_reg_addr);
 			writel(reg, pmc + PMC_SCRATCH21);
 		}
-		pr_info("%s: lp1_core_lowvolt = 0x%X, lp0_core_lowvolt = 0x%X\n", __func__,
-			lp1_core_lowvolt, lp0_core_lowvolt);		
 	}
 #endif
 

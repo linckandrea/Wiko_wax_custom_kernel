@@ -877,19 +877,15 @@ static DEVICE_ATTR(max_range, S_IRUGO | S_IWUSR | S_IWGRP,
 		   bma_max_range_show, bma_max_range_store);
 static DEVICE_ATTR(mpu_fifo_en, S_IRUGO | S_IWUSR | S_IWGRP,
 		   bma_mpu_fifo_enable_show, bma_mpu_fifo_enable_store);
-#ifdef CONFIG_INV_MPU
 static DEVICE_ATTR(orientation, S_IRUGO,
 		   bma_orientation_show, NULL);
-#endif
 
 
 static struct attribute *bma_attrs[] = {
 	&dev_attr_enable.attr,
 	&dev_attr_delay.attr,
 	&dev_attr_max_range.attr,
-#ifdef CONFIG_INV_MPU
 	&dev_attr_orientation.attr,
-#endif
 	&dev_attr_mpu_fifo_en.attr,
 //	&dev_attr_key,	
 	NULL

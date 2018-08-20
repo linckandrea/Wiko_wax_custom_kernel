@@ -222,17 +222,14 @@ void tegra_assert_system_reset(char mode, const char *cmd)
 			reg |= FORCED_RECOVERY_MODE;
 		else
 			reg &= ~(BOOTLOADER_MODE | RECOVERY_MODE | FORCED_RECOVERY_MODE);
-		pr_info("Restarting system, cmd=%s ", cmd);
 	}
 	else {
-		pr_info("Restarting system, cmd=NULL ");
 		/* Clearing SCRATCH0 31:30:1 on default reboot */
 		reg &= ~(BOOTLOADER_MODE | RECOVERY_MODE | FORCED_RECOVERY_MODE
 				| POWEROFF_MODE);
 		if (poweroff)  //ljs move; poweroff, except cmd != null
 			reg |= POWEROFF_MODE;
 	}
-	pr_info("reg=0x%lx \n", reg);
 	writel_relaxed(reg, reset + PMC_SCRATCH0);
 	if (!cmd && pm_power_reset) {
 		pm_power_reset();
@@ -256,7 +253,6 @@ static int emc_max_dvfs;
 static unsigned int memory_type;
 static int usb_port_owner_info;
 static int pmic_rst_reason;
-//Ivan added
 static int tinno_boot_mode;
 static int bootloader_fg_status;
 
@@ -699,9 +695,6 @@ static void __init tegra_ramrepair_init(void)
 	if (tegra_spare_fuse(10) | tegra_spare_fuse(11)) {
 #endif
 		u32 reg;
-
-		pr_info("%s: fuse_bit_10 = %d, fuse_bit_11 = %d\n", __func__,
-		  tegra_spare_fuse(10), tegra_spare_fuse(11));
 		reg = readl(FLOW_CTRL_RAM_REPAIR);
 		reg &= ~FLOW_CTRL_RAM_REPAIR_BYPASS_EN;
 		writel(reg, FLOW_CTRL_RAM_REPAIR);
@@ -1276,7 +1269,6 @@ static bool androidboot_mode_charger;
 
 bool get_androidboot_mode_charger(void)
 {
-        //return androidboot_mode_charger;
 		if(tegra_get_bootmode_id() == 8) return true;
 		else return false;
 }
@@ -1421,11 +1413,10 @@ void tegra_get_board_info(struct board_info *bi)
 	int err;
 #endif
 
-// Ivan
 #ifdef CONFIG_MACH_S8515
 	memset(bi, 0, sizeof(*bi));
 	bi->board_id = 0x690;
-	bi->sku = 0x3e9;		//Ivan 1001
+	bi->sku = 0x3e9; // 1001
 	bi->fab = 0x2;
 	bi->major_revision = 0x44;
 	bi->minor_revision = 0x6;
@@ -1437,7 +1428,7 @@ void tegra_get_board_info(struct board_info *bi)
 #ifdef CONFIG_MACH_S9321
 	memset(bi, 0, sizeof(*bi));
 	bi->board_id = 0x690;
-	bi->sku = 0x3e9;		//Ivan 1001
+	bi->sku = 0x3e9;
 	bi->fab = 0x2;
 	bi->major_revision = 0x44;
 	bi->minor_revision = 0x6;

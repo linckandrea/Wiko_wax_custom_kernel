@@ -403,9 +403,9 @@ static int akm_delay(struct akm_inf *inf, unsigned int delay_us)
 	int err = 0;
 
 	if (inf->dev_id == COMPASS_ID_AK8963) {
-//Ivan		if (delay_us == (AKM_INPUT_DELAY_MS_MIN * 1000))
-//Ivan			mode = AKM_CNTL1_MODE_CONT2;
-//Ivan		else
+		//if (delay_us == (AKM_INPUT_DELAY_MS_MIN * 1000))
+		//	mode = AKM_CNTL1_MODE_CONT2;
+		//else
 			mode = AKM_CNTL1_MODE_SINGLE;
 		err = akm_mode_wr(inf, false, inf->range_i, mode);
 	}
@@ -1418,7 +1418,6 @@ static int akm_probe(struct i2c_client *client,
 		goto akm_probe_err;
 //Ivan	
 	inf->dbg = 0xFFFF;
-//	inf->dbg = 0;
 	printk("Ivan akm_probe AK8963 OK!! \n");
 	return 0;
 

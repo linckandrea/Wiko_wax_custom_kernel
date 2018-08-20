@@ -29,6 +29,18 @@
 
 #include <asm/ioctls.h>
 
+#define MULTIUSER_APP_PER_USER_RANGE    100000
+
+static uid_t		foregroundUser=0;
+                    // log separation is not enabled until the first time the LOGGER_SET_UID
+                    // ioctl is called. This way, user space has control over whether log
+                    // separation is enabled.
+static bool         separationEnabled=false;
+
+uid_t multiuser_get_user_id(uid_t uid) {
+    return uid / MULTIUSER_APP_PER_USER_RANGE;
+}
+
 /*
  * struct logger_log - represents a specific log, such as 'main' or 'radio'
  *
@@ -220,7 +232,8 @@ static ssize_t do_read_log_to_user(struct logger_log *log,
  * 'log->buffer' which contains the first entry readable by 'euid'
  */
 static size_t get_next_entry_by_uid(struct logger_log *log,
-		size_t off, uid_t euid)
+		size_t off, uid_t euid, bool r_all)
+
 {
 	while (off != log->w_off) {
 		struct logger_entry *entry;
@@ -229,8 +242,20 @@ static size_t get_next_entry_by_uid(struct logger_log *log,
 
 		entry = get_entry_header(log, off, &scratch);
 
-		if (entry->euid == euid)
-			return off;
+        if (separationEnabled) {
+            if (r_all) {
+                if (entry->muid == foregroundUser)
+                    return off;
+            } else {
+                if (entry->muid == foregroundUser) {
+                    if (entry->euid == euid)
+                        return off;
+                }
+            }
+        } else {
+            if (entry->euid == euid)
+                return off;
+        }
 
 		next_len = sizeof(struct logger_entry) + entry->len;
 		off = logger_offset(log, off + next_len);
@@ -289,9 +314,14 @@ start:
 
 	mutex_lock(&log->mutex);
 
-	if (!reader->r_all)
-		reader->r_off = get_next_entry_by_uid(log,
-			reader->r_off, current_euid());
+    if (separationEnabled) {
+        reader->r_off = get_next_entry_by_uid(log,
+            reader->r_off, current_euid(), reader->r_all);
+    } else {
+        if (!reader->r_all)
+            reader->r_off = get_next_entry_by_uid(log,
+                reader->r_off, current_euid(), reader->r_all);
+    }
 
 	/* is there still something to read or did we race? */
 	if (unlikely(log->w_off == reader->r_off)) {
@@ -459,6 +489,7 @@ ssize_t logger_aio_write(struct kiocb *iocb, const struct iovec *iov,
 	header.sec = now.tv_sec;
 	header.nsec = now.tv_nsec;
 	header.euid = current_euid();
+    header.muid = multiuser_get_user_id(header.euid);
 	header.len = min_t(size_t, iocb->ki_left, LOGGER_ENTRY_MAX_PAYLOAD);
 	header.hdr_size = sizeof(struct logger_entry);
 
@@ -596,9 +627,15 @@ static unsigned int logger_poll(struct file *file, poll_table *wait)
 	poll_wait(file, &log->wq, wait);
 
 	mutex_lock(&log->mutex);
-	if (!reader->r_all)
-		reader->r_off = get_next_entry_by_uid(log,
-			reader->r_off, current_euid());
+
+    if (separationEnabled) {
+        reader->r_off = get_next_entry_by_uid(log,
+            reader->r_off, current_euid(), reader->r_all);
+    } else {
+        if (!reader->r_all)
+            reader->r_off = get_next_entry_by_uid(log,
+                reader->r_off, current_euid(), reader->r_all);
+    }
 
 	if (log->w_off != reader->r_off)
 		ret |= POLLIN | POLLRDNORM;
@@ -651,9 +688,14 @@ static long logger_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		}
 		reader = file->private_data;
 
-		if (!reader->r_all)
-			reader->r_off = get_next_entry_by_uid(log,
-				reader->r_off, current_euid());
+        if (separationEnabled) {
+            reader->r_off = get_next_entry_by_uid(log,
+                reader->r_off, current_euid(), reader->r_all);
+        } else {
+            if (!reader->r_all)
+                reader->r_off = get_next_entry_by_uid(log,
+                    reader->r_off, current_euid(), reader->r_all);
+        }
 
 		if (log->w_off != reader->r_off)
 			ret = get_user_hdr_len(reader->r_ver) +
@@ -687,6 +729,11 @@ static long logger_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		reader = file->private_data;
 		ret = logger_set_version(reader, argp);
 		break;
+    case LOGGER_SET_UID:
+        foregroundUser      = arg;
+        separationEnabled   = true;
+        ret                 = 0;
+        break;
 	}
 
 	mutex_unlock(&log->mutex);

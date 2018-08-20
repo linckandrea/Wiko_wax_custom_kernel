@@ -21,12 +21,16 @@
 #include <linux/netdevice.h>
 #include <linux/if_arp.h>
 #include <linux/semaphore.h>
+#include <linux/interrupt.h>
+#include <linux/hrtimer.h>
 #include "nvshm_types.h"
 #include "nvshm_if.h"
 #include "nvshm_priv.h"
 #include "nvshm_iobuf.h"
 
 #define MAX_XMIT_SIZE 1500
+
+#define NVSHM_NETIF_TIMER_INTERVAL (400UL * NSEC_PER_USEC)
 
 #define NVSHM_NETIF_PREFIX "wwan"
 
@@ -36,16 +40,16 @@ struct nvshm_net_line {
 	int use;
 	int nvshm_chan;
 	struct net_device_stats stats;
-
-	/* iobuf queues for nvshm flow control support */
-	struct nvshm_iobuf *q_head;
-	struct nvshm_iobuf *q_tail;
 	struct net_device *net;
 	struct nvshm_channel *pchan; /* contains (struct net_device *)data */
 	int errno;
 	spinlock_t lock;
 	int stop_tx; /* stop tx when >= 0 */
 	int ipc_bb2ap;
+	struct tasklet_struct tx_bh;
+	struct hrtimer tx_timer;
+	struct nvshm_iobuf *tx_head;
+	struct nvshm_iobuf *tx_tail;
 };
 
 /* rx_event() is called when a packet of data is received.
@@ -232,13 +236,18 @@ static int nvshm_netops_close(struct net_device *dev)
 	spin_unlock_irqrestore(&priv->lock, f);
 
 	if (!priv->use) {
-		/* Cleanup if data are still present in io queue */
-		if (priv->q_head) {
-			pr_debug("%s: still some data in queue!\n", __func__);
-			nvshm_iobuf_free_cluster(
-				(struct nvshm_iobuf *)priv->q_head);
-			priv->q_head = priv->q_tail = NULL;
+		/* Check if there is some buffer queued */
+		spin_lock_irqsave(&priv->lock, f);
+		if (priv->tx_head) {
+			/* Free buffers as it's not a final closure */
+			nvshm_iobuf_free(priv->tx_head);
+			priv->tx_head = priv->tx_tail = NULL;
 		}
+		spin_unlock_irqrestore(&priv->lock, f);
+		/* timer/bh completion/removal */
+		hrtimer_cancel(&priv->tx_timer);
+		tasklet_kill(&priv->tx_bh);
+		/* Finaly close line */
 		nvshm_close_channel(priv->pchan);
 	}
 
@@ -304,22 +313,27 @@ static int nvshm_netops_xmit_frame(struct sk_buff *skb, struct net_device *dev)
 			leaf->sg_next = NVSHM_A2B(priv, iob);
 			leaf = iob;
 		}
-	}
-	if (nvshm_write(priv->pchan, list)) {
-		/* no more transmit possible - stop queue on next TX */
-		pr_warning("%s rate limit hit on channel %d\n",
-			   __func__, priv->nvshm_chan);
-		spin_lock_irqsave(&priv->lock, f);
-		priv->stop_tx++;
-		spin_unlock_irqrestore(&priv->lock, f);
-	}
+		priv->stats.tx_packets++;
+		priv->stats.tx_bytes += len;
+		pr_debug("packets=%ld, tx_bytes=%ld\n", priv->stats.tx_packets,
+			 priv->stats.tx_bytes);
 
-	/* successfully written len data bytes */
-	priv->stats.tx_packets++;
-	priv->stats.tx_bytes += len;
 
-	pr_debug("packets=%ld, tx_bytes=%ld\n", priv->stats.tx_packets,
-			priv->stats.tx_bytes);
+	}
+	spin_lock_irqsave(&priv->lock, f);
+	if (priv->tx_head) {
+		priv->tx_tail->next = NVSHM_A2B(priv, list);
+		priv->tx_tail = list;
+	} else {
+		priv->tx_head = priv->tx_tail = list;
+	}
+	spin_unlock_irqrestore(&priv->lock, f);
+
+	if (!hrtimer_active(&priv->tx_timer)) {
+		hrtimer_start(&priv->tx_timer,
+			      ktime_set(0, NVSHM_NETIF_TIMER_INTERVAL),
+			      HRTIMER_MODE_REL);
+	}
 
 	/* free skb now as nvshm is a ref on it now */
 	kfree_skb(skb);
@@ -393,6 +407,34 @@ static void nvshm_nwif_init_dev(struct net_device *dev)
 	dev->flags |= IFF_POINTOPOINT | IFF_NOARP;
 }
 
+static enum hrtimer_restart nvshm_net_tx_timer_cb(struct hrtimer *timer)
+{
+	struct nvshm_net_line *line =
+		container_of(timer, struct nvshm_net_line, tx_timer);
+
+	tasklet_schedule(&line->tx_bh);
+	return HRTIMER_NORESTART;
+}
+
+static void nvshm_net_tx_bh(unsigned long data)
+{
+	struct nvshm_net_line *line = (struct nvshm_net_line *)data;
+	struct nvshm_iobuf *iob;
+	unsigned long f;
+
+	spin_lock_irqsave(&line->lock, f);
+	iob = line->tx_head;
+	if (iob) {
+		line->tx_head = line->tx_tail = NULL;
+		if (nvshm_write(line->pchan, iob)) {
+			pr_warning("%s rate limit hit on channel %d\n",
+				   __func__, line->nvshm_chan);
+			line->stop_tx++;
+		}
+	}
+	spin_unlock_irqrestore(&line->lock, f);
+}
+
 struct net_device *nvshm_net_create(struct nvshm_handle *handle, int chan,
 	int index)
 {
@@ -413,6 +455,14 @@ struct net_device *nvshm_net_create(struct nvshm_handle *handle, int chan,
 	line->net = dev;
 	line->ipc_bb2ap = handle->ipc_bb2ap;
 	line->nvshm_chan = chan;
+
+	line->tx_head = line->tx_tail = NULL;
+
+	hrtimer_init(&line->tx_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	line->tx_timer.function = &nvshm_net_tx_timer_cb;
+
+	tasklet_init(&line->tx_bh, &nvshm_net_tx_bh, (unsigned long)line);
+
 	spin_lock_init(&line->lock);
 
 	sts = register_netdev(dev);
@@ -442,6 +492,9 @@ int nvshm_net_remove(struct net_device *dev)
 	pr_debug("%s free %s%d on [%d]\n", __func__, NVSHM_NETIF_PREFIX,
 		(int)line->net->base_addr, line->nvshm_chan);
 
+	/* Stop first timer then BH tasklet */
+	hrtimer_cancel(&line->tx_timer);
+	tasklet_kill(&line->tx_bh);
 	unregister_netdev(line->net);
 	free_netdev(line->net);
 	line->net = NULL;

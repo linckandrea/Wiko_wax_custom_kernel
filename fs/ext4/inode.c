@@ -3462,11 +3462,8 @@ static int __ext4_get_inode_loc(struct inode *inode,
 	iloc->offset = (inode_offset % inodes_per_block) * EXT4_INODE_SIZE(sb);
 
 	bh = sb_getblk(sb, block);
-	if (!bh) {
-		EXT4_ERROR_INODE_BLOCK(inode, block,
-				       "unable to read itable block");
+	if (!bh)
 		return -EIO;
-	}
 	if (!buffer_uptodate(bh)) {
 		lock_buffer(bh);
 

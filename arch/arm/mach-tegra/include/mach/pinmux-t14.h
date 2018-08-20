@@ -19,7 +19,7 @@
 
 #define TEGRA_PINMUX_HAS_IO_DIRECTION	1
 
-void tegra14x_default_pinmux(void);
+void __initdata tegra14x_default_pinmux(void);
 
 enum tegra_pingroup {
 	TEGRA_PINGROUP_SDMMC1_CLK,

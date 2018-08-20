@@ -537,7 +537,6 @@ void check(struct tegra_dsi_cmd * init_cmd,unsigned int count)
     return ;             
 }
 
-
 void rebuild_tegra_lcm(struct LCM_setting_table *init_table,struct tegra_dsi_out * pdata ,u16 init_count)
 {
 	//pr_info("Magnum dsi_otm1283a_720p_dc_out_init\n");
@@ -573,8 +572,6 @@ void rebuild_tegra_lcm_resume(struct LCM_setting_table *init_table,struct tegra_
 		pdata->n_late_resume_cmd = init_count;
 	}
 }
-
-
 #endif
 
 void tegra_dc_clk_enable(struct tegra_dc *dc)
@@ -629,6 +626,7 @@ void tegra_dc_release_dc_out(struct tegra_dc *dc)
 	print(data, buff);				      \
 	} while (0)
 
+#ifdef DEBUG
 static void _dump_regs(struct tegra_dc *dc, void *data,
 		       void (* print)(void *data, const char *str))
 {
@@ -806,6 +804,7 @@ static void _dump_regs(struct tegra_dc *dc, void *data,
 	tegra_dc_put(dc);
 	mutex_unlock(&dc->lock);
 }
+#endif
 
 #undef DUMP_REG
 
@@ -827,22 +826,24 @@ static void dump_regs(struct tegra_dc *dc) {}
 #endif /* DEBUG */
 
 #ifdef CONFIG_DEBUG_FS
-
+#ifdef DEBUG
 static void dbg_regs_print(void *data, const char *str)
 {
 	struct seq_file *s = data;
 
 	seq_printf(s, "%s", str);
 }
+#endif
 
 #undef DUMP_REG
 
 static int dbg_dc_show(struct seq_file *s, void *unused)
 {
+#ifdef DEBUG
 	struct tegra_dc *dc = s->private;
 
 	_dump_regs(dc, s, dbg_regs_print);
-
+#endif
 	return 0;
 }
 
@@ -2241,7 +2242,6 @@ static bool _tegra_dc_controller_enable(struct tegra_dc *dc)
 
 	if (dc->out->enable)
 		dc->out->enable(&dc->ndev->dev);
-		
 
 	tegra_dc_setup_clk(dc, dc->clk);
 	tegra_dc_clk_enable(dc);
@@ -2452,6 +2452,9 @@ static void _tegra_dc_controller_disable(struct tegra_dc *dc)
 
 		/* disable windows */
 		w->flags &= ~TEGRA_WIN_FLAG_ENABLED;
+
+		/* set window physical address to invalid*/
+		w->phys_addr = 0;
 
 		/* flush any pending syncpt waits */
 		while (dc->syncpt[i].min < dc->syncpt[i].max) {

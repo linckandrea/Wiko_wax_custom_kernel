@@ -209,7 +209,7 @@ void tegra_get_leftspeaker_board_info(struct board_info *bi);
 int tegra_get_board_panel_id(void);
 int tegra_get_touch_vendor_id(void);
 int tegra_get_touch_panel_id(void);
-//edit by Magnum 2013-11-14
+
 int tegra_get_bootmode_id(void);
 int get_core_edp(void);
 enum panel_type get_panel_type(void);

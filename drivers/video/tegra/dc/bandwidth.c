@@ -77,10 +77,7 @@ static void tegra_dc_set_latency_allowance(struct tegra_dc *dc,
 #endif
 	BUG_ON(w->idx >= ARRAY_SIZE(*la_id_tab));
 
-
-
 	bw = max(w->bandwidth, w->new_bandwidth);
-
 
 #if defined(CONFIG_ARCH_TEGRA_2x_SOC) || defined(CONFIG_ARCH_TEGRA_3x_SOC)
 	/* tegra_dc_get_bandwidth() treats V filter windows as double
@@ -307,8 +304,6 @@ void tegra_dc_program_bandwidth(struct tegra_dc *dc, bool use_new)
 #endif
 		dc->bw_kbps = dc->new_bw_kbps;
 	}
-
-
 
 	for (i = 0; i < DC_N_WINDOWS; i++) {
 		struct tegra_dc_win *w = &dc->windows[i];

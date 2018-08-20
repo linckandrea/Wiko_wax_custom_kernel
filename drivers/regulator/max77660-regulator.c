@@ -3,7 +3,7 @@
  * Maxim LDO and Buck regulators driver
  *
  * Copyright 2011-2012 Maxim Integrated Products, Inc.
- * Copyright (C) 2011-2013 NVIDIA Corporation. All rights reserved.
+ * Copyright (C) 2011-2014 NVIDIA Corporation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -661,7 +661,8 @@ static int max77660_regulator_set_ramp_delay(struct regulator_dev *rdev,
 	}
 
 	ret = max77660_reg_update(to_max77660_chip(reg), MAX77660_PWR_SLAVE,
-				  rinfo->regs[CFG_REG].addr, val,
+				  rinfo->regs[CFG_REG].addr,
+				  val << MAX77660_BUCK1_5_CNFG_RAMP_SHIFT,
 				  MAX77660_BUCK1_5_CNFG_RAMP_MASK);
 	if (ret < 0) {
 		dev_err(reg->dev, "%s: failed to update ramp setting\n",
@@ -916,6 +917,11 @@ static int max77660_regulator_preinit(struct max77660_regulator *reg)
 			mask |= MAX77660_BUCK1_5_CNFG_DVFS_EN_MASK;
 			if (pdata->flags & DISABLE_DVFS)
 				val &= ~MAX77660_BUCK1_5_CNFG_DVFS_EN_MASK;
+
+			if (reg->rinfo->id == MAX77660_REGULATOR_ID_BUCK4) {
+				mask |= MAX77660_BUCK1_5_CNFG_ADE_MASK;
+				val &= ~MAX77660_BUCK1_5_CNFG_ADE_MASK;
+			}
 		} else if ((reg->rinfo->id >= MAX77660_REGULATOR_ID_BUCK6) &&
 			(reg->rinfo->id <= MAX77660_REGULATOR_ID_BUCK7)) {
 			mask |= MAX77660_BUCK6_7_CNFG_FPWM_MASK;

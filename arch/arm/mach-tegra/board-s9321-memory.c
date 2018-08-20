@@ -11515,19 +11515,19 @@ int __init ceres_emc_init(void)
 #endif
 		} else if (tegra_get_memory_type() == 1) {
 			pr_info("Loading Ceres 2GB EMC tables.\n");
+#ifdef CONFIG_TEGRA_T14x_MULTI_MEMORY
+			tegra_emc_device.dev.platform_data =
+					&ceres_emc_multi_pdata;
+#else
 			tegra_emc_device.dev.platform_data =
 				&ceres_2gb_emc_pdata;
-			//tegra_emc_device.dev.platform_data =
-			//		&ceres_emc_pdata;
+#endif
 		} else {
 			WARN(1, "Invalid memory type: %d\n",
 			     tegra_get_memory_type());
 			return -EINVAL;
 		}
 		break;
-//ljs s9321
-			tegra_emc_device.dev.platform_data =
-					&ceres_emc_multi_pdata;
 
 	case BOARD_E1681:
 		pr_info("Loading Ceres SLT EMC tables.\n");

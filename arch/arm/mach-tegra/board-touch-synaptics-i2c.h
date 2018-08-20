@@ -24,14 +24,8 @@
 #include <linux/delay.h>
 #include <linux/gpio.h>
 #include "board-touch-synaptics-i2c.h"
-//#include "board-ceres.h"
 #include <linux/input/synaptics_dsx.h> 
 #include "board.h"
 
-//#define TINNO_TP_2_CAM 
-//extern struct synaptics_dsx_cap_button_map synaptics_button_map;
-
-//int synaptics_touchpad_gpio_setup(void *gpio_data, bool configure);
-//int __init touch_init_synaptics_i2c(struct spi_board_info *board_info,int board_info_size);
 int __init touch_init_synaptics_i2c(void);
 #endif

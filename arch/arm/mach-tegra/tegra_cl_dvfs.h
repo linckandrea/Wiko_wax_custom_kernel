@@ -87,7 +87,9 @@ struct tegra_cl_dvfs_platform_data {
 
 #ifdef CONFIG_ARCH_TEGRA_HAS_CL_DVFS
 int tegra_init_cl_dvfs(void);
+#ifdef CONFIG_DEBUG_FS
 int tegra_cl_dvfs_debug_init(struct clk *dfll_clk);
+#endif
 void tegra_cl_dvfs_resume(struct tegra_cl_dvfs *cld);
 
 void tegra_cl_dvfs_disable(struct tegra_cl_dvfs *cld);

@@ -73,8 +73,7 @@
 #include "common.h"
 #include "board-touch.h"
 #include "fuse.h"
-//Ivan
-//#include "board-touch-320x.h"
+
 #include "board-touch-synaptics-i2c.h"
 
 #define FUSE_SPARE_BIT_12_0     0x2d0
@@ -83,8 +82,8 @@
 #define CERES_BT_HOST_WAKE	TEGRA_GPIO_PM2
 #define CERES_BT_EXT_WAKE	TEGRA_GPIO_PM1
 #define CERES_NFC_IRQ		TEGRA_GPIO_PM4
-#define CERES_NFC_EN		TEGRA_GPIO_PM5 //TEGRA_GPIO_PI0
-#define CERES_NFC_WAKE		TEGRA_GPIO_PM6 //TEGRA_GPIO_PM0
+#define CERES_NFC_EN		TEGRA_GPIO_PM5
+#define CERES_NFC_WAKE		TEGRA_GPIO_PM6
 
 static struct board_info board_info;
 char wifi_mac_addr[6];
@@ -193,6 +192,7 @@ static noinline void __init ceres_setup_bluedroid_pm(void)
 }
 #endif
 
+#ifdef S8515_HAS_NFC
 static struct bcm2079x_platform_data nfc_pdata = {
 	.irq_gpio = CERES_NFC_IRQ,
 	.en_gpio = CERES_NFC_EN,
@@ -205,6 +205,7 @@ static struct i2c_board_info __initdata ceres_i2c_bus3_board_info[] = {
 		.platform_data = &nfc_pdata,
 	},
 };
+#endif
 
 void ceres_get_mac_addr(struct memory_accessor *mem_acc, void *context)
 {
@@ -254,8 +255,8 @@ static struct max98090_pdata ceres_max98090_pdata = {
 	.eq_cfgcnt = ARRAY_SIZE(max98090_eq_cfg),
 
 	/* Microphone Configuration */
-	.digmic_left_mode = 0,		//Ivan 1 -> 0
-	.digmic_right_mode = 0,		//Ivan 1 -> 0
+	.digmic_left_mode = 0,
+	.digmic_right_mode = 0,
 };
 
 static struct aic325x_gpio_setup aic3256_gpio[] = {
@@ -815,7 +816,7 @@ static __initdata struct tegra_clk_init_table ceres_clk_init_table[] = {
 	{ "pll_m",	NULL,		0,		false},
 	{ "vi_sensor",	"pll_p",	150000000,	false},
 	{ "vi_sensor2",	"pll_p",	150000000,	false},
-	{ "pwm",        "pll_p",        6000000,        false},	
+	{ "pwm",        "pll_p",        6000000,        false},
 	{ "vi",		"pll_p",	100000000,	false},
 	{ "isp",	"pll_p",	150000000,	false},
 	{ "isp_sapor",	"pll_p",	150000000,	false},
@@ -871,6 +872,7 @@ static void __init uart_debug_init(void)
 	debug_port_id = uart_console_debug_init(3);
 	if (debug_port_id < 0)
 		return;
+
 	ceres_uart_devices[debug_port_id] = uart_console_debug_device;
 }
 
@@ -967,13 +969,13 @@ static void ceres_i2c_init(void)
 	platform_device_register(&tegra14_i2c_device2);
 	platform_device_register(&tegra14_i2c_device1);
 
+#ifdef S8515_HAS_NFC
 	if (board_info.board_id == BOARD_E1690)
 		nfc_pdata.en_gpio = TEGRA_GPIO_PM5;
 
 	ceres_i2c_bus3_board_info[0].irq = gpio_to_irq(CERES_NFC_IRQ);
 	i2c_register_board_info(1, ceres_i2c_bus3_board_info, 1);
-//Ivan removed
-	//i2c_register_board_info(0, &ceres_eeprom_mac_add, 1);
+#endif
 }
 
 #if 0
@@ -1081,69 +1083,9 @@ static struct spi_board_info synaptics_9999_spi_board_ceres[] = {
 static int __init ceres_touch_init(void)
 {
 	pr_info("%s: initializing synaptics\n", __func__);
-	touch_init_synaptics_i2c();//touch_init_syn320x();
+	touch_init_synaptics_i2c();
 
 	return 0;
-}
-
-static void print_reason_string(int reboot)
-{
-  switch (reboot) {
-    case 0:
-      printk("PMIC reboot reason Invalid! \n");
-      break;
-      
-    case 1:
-      printk("PMIC reboot reason NoReason! \n");      
-      break;
-      
-    case 2:
-      printk("PMIC reboot reason PwrOnLPK! \n");      
-      break;
-      
-    case 3:
-      printk("PMIC reboot reason PwrDown! \n");      
-      break;
-      
-    case 4:
-      printk("PMIC reboot reason WTD! \n");      
-      break;
-      
-    case 5:
-      printk("PMIC reboot reason Thermal! \n");      
-      break;
-
-    case 6:
-      printk("PMIC reboot reason ResetSig! \n");      
-      break;
-      
-    case 7:
-      printk("PMIC reboot reason SwReset! \n");      
-      break;
-
-    case 8:
-      printk("PMIC reboot reason BatLow! \n");      
-      break;
-
-    case 9:
-      printk("PMIC reboot reason GPADC! \n");      
-      break;
-      
-    case 10:
-      printk("PMIC reboot reason RTC! \n");      
-      break;
-      
-    case 11:
-      printk("PMIC reboot reason Num! \n");      
-      break;
-      
-    default:
-      printk("PMIC reboot reason Unknow! \n");      
-      break;
-            
-  }
-    
-  
 }
 
 #if defined(CONFIG_TEGRA_BASEBAND)
@@ -1151,16 +1093,10 @@ static void print_reason_string(int reboot)
 static void ceres_tegra_bb_init(void)
 {
 	int modem_id = tegra_get_modem_id();
-//Ivan added for debug
-	int reboot_reason = tegra_get_pmic_rst_reason();
-	
-	printk("Ivan PMIC reboot reason = %x \n", reboot_reason);
-	print_reason_string(reboot_reason);
-	
-	printk("Ivan S8515 PR Version= %x \n", CONFIG_S8515_PR_VERSION);
-	
+
 	if (modem_id == TEGRA_BB_INTEGRATED_DISABLED)
 		return;
+
 	pr_info("%s: registering tegra bb\n", __func__);
 	ceres_tegra_bb_data.bb_irq = INT_BB2AP_INT0;
 	ceres_tegra_bb_data.mem_req_soon = INT_BB2AP_MEM_REQ_SOON_INT;
@@ -1224,16 +1160,12 @@ static void __init tegra_ceres_late_init(void)
 	tegra_soc_device_init("ceres");
 	ceres_keys_init();
 	ceres_regulator_init();
-	//ceres_dtv_init();
-
 	ceres_suspend_init();
 	if( !get_androidboot_mode_charger() )
 		ceres_touch_init();	
 	ceres_sdhci_init();
 	platform_add_devices(ceres_devices, ARRAY_SIZE(ceres_devices));
 	tegra_ram_console_debug_init();
-//Ivan Merged from NV 140624
-//	tegra_serial_debug_init(TEGRA_UARTA_BASE, INT_WDT_CPU, NULL, -1, -1);
 #ifdef CONFIG_TEGRA_FIQ_DEBUGGER
 	tegra_serial_debug_init(TEGRA_UARTA_BASE, INT_WDT_AVP, NULL, -1, -1);
 #endif
@@ -1242,7 +1174,6 @@ static void __init tegra_ceres_late_init(void)
 	isomgr_init();
 	ceres_panel_init();
 	ceres_sensors_init();
-
 	if( !get_androidboot_mode_charger() )
 		ceres_modem_init();
 	tegra_register_fuse();
@@ -1281,7 +1212,7 @@ static void __init tegra_ceres_reserve(void)
 #if defined(CONFIG_NVMAP_CONVERT_CARVEOUT_TO_IOVMM)
 	/* for PANEL_5_SHARP_1080p: 1920*1080*4*2 = 16588800 bytes */
 //	tegra_reserve(0, SZ_16M, SZ_8M);
-	tegra_reserve(0, SZ_8M, 0);	//Patched by NV for save memory	
+	tegra_reserve(0, SZ_8M, 0);	//Patched by NV for save memory
 #else
 	tegra_reserve(SZ_128M, SZ_16M, SZ_16M);
 #endif

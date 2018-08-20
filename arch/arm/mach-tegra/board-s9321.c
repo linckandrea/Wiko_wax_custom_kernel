@@ -73,8 +73,6 @@
 #include "common.h"
 #include "board-touch.h"
 #include "fuse.h"
-//Ivan
-//#include "board-touch-320x.h"
 #include "board-touch-synaptics-i2c.h"
 
 #define FUSE_SPARE_BIT_12_0     0x2d0
@@ -193,6 +191,7 @@ static noinline void __init ceres_setup_bluedroid_pm(void)
 }
 #endif
 
+#ifdef S9321_HAS_NFC
 static struct bcm2079x_platform_data nfc_pdata = {
 	.irq_gpio = CERES_NFC_IRQ,
 	.en_gpio = CERES_NFC_EN,
@@ -205,6 +204,7 @@ static struct i2c_board_info __initdata ceres_i2c_bus3_board_info[] = {
 		.platform_data = &nfc_pdata,
 	},
 };
+#endif
 
 void ceres_get_mac_addr(struct memory_accessor *mem_acc, void *context)
 {
@@ -254,8 +254,8 @@ static struct max98090_pdata ceres_max98090_pdata = {
 	.eq_cfgcnt = ARRAY_SIZE(max98090_eq_cfg),
 
 	/* Microphone Configuration */
-	.digmic_left_mode = 0,		//Ivan 1 -> 0
-	.digmic_right_mode = 0,		//Ivan 1 -> 0
+	.digmic_left_mode = 0,
+	.digmic_right_mode = 0,
 };
 
 static struct aic325x_gpio_setup aic3256_gpio[] = {
@@ -533,19 +533,6 @@ static struct platform_device *ceres_only_audio_devices[] __initdata = {
 static struct platform_device *atlantis_only_audio_devices[] __initdata = {
 	&ceres_audio_aic325x_device,
 };
-
-#ifdef CONFIG_MACH_S9321
-static struct platform_device ceres_gpio_button_device = {
-	.name           = "gpio-button",
-	.id             = -1,
-	//.irq			= TEGRA_GPIO_PJ3,
-};
-static noinline void __init ceres_setup_gpio_button(void)
-{
-	platform_device_register(&ceres_gpio_button_device);
-	return;
-};
-#endif
 
 static struct platform_device *ceres_common_audio_devices[] __initdata = {
 	&tegra_ahub_device,
@@ -1012,13 +999,13 @@ static void ceres_i2c_init(void)
 	platform_device_register(&tegra14_i2c_device2);
 	platform_device_register(&tegra14_i2c_device1);
 
+#ifdef S9321_HAS_NFC
 	if (board_info.board_id == BOARD_E1690)
 		nfc_pdata.en_gpio = TEGRA_GPIO_PM5;
 
 	ceres_i2c_bus3_board_info[0].irq = gpio_to_irq(CERES_NFC_IRQ);
 	i2c_register_board_info(1, ceres_i2c_bus3_board_info, 1);
-//Ivan removed
-	//i2c_register_board_info(0, &ceres_eeprom_mac_add, 1);
+#endif
 }
 
 #if 0
@@ -1126,69 +1113,9 @@ static struct spi_board_info synaptics_9999_spi_board_ceres[] = {
 static int __init ceres_touch_init(void)
 {
 	pr_info("%s: initializing synaptics\n", __func__);
-	touch_init_synaptics_i2c();//touch_init_syn320x();
+	touch_init_synaptics_i2c();
 
 	return 0;
-}
-
-static void print_reason_string(int reboot)
-{
-  switch (reboot) {
-    case 0:
-      printk("PMIC reboot reason Invalid! \n");
-      break;
-      
-    case 1:
-      printk("PMIC reboot reason NoReason! \n");      
-      break;
-      
-    case 2:
-      printk("PMIC reboot reason PwrOnLPK! \n");      
-      break;
-      
-    case 3:
-      printk("PMIC reboot reason PwrDown! \n");      
-      break;
-      
-    case 4:
-      printk("PMIC reboot reason WTD! \n");      
-      break;
-      
-    case 5:
-      printk("PMIC reboot reason Thermal! \n");      
-      break;
-
-    case 6:
-      printk("PMIC reboot reason ResetSig! \n");      
-      break;
-      
-    case 7:
-      printk("PMIC reboot reason SwReset! \n");      
-      break;
-
-    case 8:
-      printk("PMIC reboot reason BatLow! \n");      
-      break;
-
-    case 9:
-      printk("PMIC reboot reason GPADC! \n");      
-      break;
-      
-    case 10:
-      printk("PMIC reboot reason RTC! \n");      
-      break;
-      
-    case 11:
-      printk("PMIC reboot reason Num! \n");      
-      break;
-      
-    default:
-      printk("PMIC reboot reason Unknow! \n");      
-      break;
-            
-  }
-    
-  
 }
 
 #if defined(CONFIG_TEGRA_BASEBAND)
@@ -1196,16 +1123,10 @@ static void print_reason_string(int reboot)
 static void ceres_tegra_bb_init(void)
 {
 	int modem_id = tegra_get_modem_id();
-//Ivan added for debug
-	int reboot_reason = tegra_get_pmic_rst_reason();
-	
-	printk("Ivan PMIC reboot reason = %x \n", reboot_reason);
-	print_reason_string(reboot_reason);
-	
-	printk("Ivan S9321 PR Version= %x \n", CONFIG_S8515_PR_VERSION);
-	
+
 	if (modem_id == TEGRA_BB_INTEGRATED_DISABLED)
 		return;
+
 	pr_info("%s: registering tegra bb\n", __func__);
 	ceres_tegra_bb_data.bb_irq = INT_BB2AP_INT0;
 	ceres_tegra_bb_data.mem_req_soon = INT_BB2AP_MEM_REQ_SOON_INT;
@@ -1269,8 +1190,6 @@ static void __init tegra_ceres_late_init(void)
 	tegra_soc_device_init("ceres");
 	ceres_keys_init();
 	ceres_regulator_init();
-	//ceres_dtv_init();
-
 	ceres_suspend_init();
 	if( !get_androidboot_mode_charger() )
 		ceres_touch_init();	
@@ -1285,10 +1204,6 @@ static void __init tegra_ceres_late_init(void)
 	isomgr_init();
 	ceres_panel_init();
 	ceres_sensors_init();
-#ifdef CONFIG_MACH_S9321
-	ceres_setup_gpio_button();
-#endif
-
 	if( !get_androidboot_mode_charger() )
 		ceres_modem_init();
 	tegra_register_fuse();
@@ -1322,44 +1237,12 @@ static void __init tegra_ceres_dt_init(void)
 	tegra_ceres_late_init();
 }
 
-void tegra_debug_writec(unsigned int c)
-{
-        void __iomem *debug_port_base_addr;
-        unsigned int tmp = 0;
-
-#define DEBUG_PORT_BASE_ADDRESS  (0x70006000)
-
-	debug_port_base_addr = IO_ADDRESS(DEBUG_PORT_BASE_ADDRESS);
-
-        //tegra_write(t, c, UART_TX);
-        //tegra_write(t, UART_IER_RLSI | UART_IER_RDI, UART_IER);
-        //tegra_write(t, 0, UART_IIR);
-
-        __raw_writeb((UART_IER_RLSI | UART_IER_RDI), (debug_port_base_addr + UART_TX * 4));
-
-        __raw_writeb(0, debug_port_base_addr + UART_IIR * 4);
-
-        /* Clear LCR.DLAB bit */
-        tmp = __raw_readb(debug_port_base_addr + UART_LCR * 4);
-
-        tmp = tmp & 0x7f;
-        __raw_writeb(tmp, (debug_port_base_addr + UART_LCR * 4));
-
-        udelay(10);
-
-        __raw_writeb(c, debug_port_base_addr + UART_TX * 4);
-
-        udelay(1000);
-
-        iounmap(debug_port_base_addr);
-}
-EXPORT_SYMBOL_GPL(tegra_debug_writec);
-
 static void __init tegra_ceres_reserve(void)
 {
 #if defined(CONFIG_NVMAP_CONVERT_CARVEOUT_TO_IOVMM)
 	/* for PANEL_5_SHARP_1080p: 1920*1080*4*2 = 16588800 bytes */
-	tegra_reserve(0, SZ_16M, SZ_8M);
+	tegra_reserve(SZ_16M, SZ_16M, SZ_16M);
+//	tegra_reserve(0, SZ_16M, SZ_8M);
 //	tegra_reserve(0, SZ_8M, 0);	//Patched by NV for save memory
 #else
 	tegra_reserve(SZ_128M, SZ_16M, SZ_16M);

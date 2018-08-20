@@ -201,7 +201,7 @@
 #define POWER_UP_TIME            100
 #define SENSOR_UP_TIME           30
 #define REG_UP_TIME              2
-#define INV_MPU_SAMPLE_RATE_CHANGE_STABLE 100	//Ivan change from 50 to 100
+#define INV_MPU_SAMPLE_RATE_CHANGE_STABLE 100
 #define MPU_MEM_BANK_SIZE        256
 #define SELF_TEST_GYRO_FULL_SCALE 250
 #define SELF_TEST_ACCEL_FULL_SCALE 8

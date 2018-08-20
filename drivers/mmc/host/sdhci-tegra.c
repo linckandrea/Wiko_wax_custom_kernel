@@ -4324,6 +4324,7 @@ static int __devexit sdhci_tegra_remove(struct platform_device *pdev)
 		unregister_reboot_notifier(&tegra_host->reboot_notify);
 
 	sdhci_pltfm_free(pdev);
+	kfree(tegra_host);
 
 	return rc;
 }

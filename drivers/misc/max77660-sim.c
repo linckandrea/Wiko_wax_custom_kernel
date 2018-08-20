@@ -119,6 +119,7 @@ static irqreturn_t max77660_sim_irq(int irq, void *data)
 		sysfs_notify(&sim->miscdev->kobj, NULL, "sim2_inserted");
 		dev_dbg(sim->dev, "sim2(%s)\n", sim2 ? "insert" : "removal");
 	}
+
 	return IRQ_HANDLED;
 }
 
@@ -154,6 +155,7 @@ static int __devinit max77660_sim_probe(struct platform_device *pdev)
 	}
 
 	/* SIM interrupt mask */
+	/* WAR spurious SIM removals by masking interrupts */
 	ret = max77660_reg_write(pdev->dev.parent, MAX77660_PWR_SLAVE,
 #ifdef CONFIG_SIM_MAX77660_HOTSWAP
 			MAX77660_REG_SIM1NTM, SIM_SIM1_2_NMT_ENABLE);
@@ -270,7 +272,6 @@ static int __devinit max77660_sim_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, sim);
 	misc_pdev = to_platform_device(sim_miscdev.this_device);
 	misc_pdev->dev.platform_data = sim;
-
 
 	ret = request_threaded_irq(sim_irq, NULL,  max77660_sim_irq,
 			IRQF_ONESHOT,

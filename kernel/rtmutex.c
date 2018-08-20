@@ -152,7 +152,7 @@ static int rt_mutex_adjust_prio_chain(struct task_struct *task,
 				      struct rt_mutex_waiter *orig_waiter,
 				      struct task_struct *top_task)
 {
-	struct rt_mutex *lock;
+	struct rt_mutex *lock = orig_lock;
 	struct rt_mutex_waiter *waiter, *top_waiter = orig_waiter;
 	int detect_deadlock, ret = 0, depth = 0;
 	unsigned long flags;
@@ -205,6 +205,22 @@ static int rt_mutex_adjust_prio_chain(struct task_struct *task,
 	 */
 	if (orig_waiter && !rt_mutex_owner(orig_lock))
 		goto out_unlock_pi;
+
+	/*
+	 * Deadlock check for the following scenario:
+	 *
+	 * T holds lock L and has waiters
+	 * T locks L again, but does not end up as it's own top waiter
+	 *
+	 * So we would drop out at the next check without noticing.
+	 *
+	 * Note, we need to check for orig_waiter as it might be NULL
+	 * when deboosting!
+	 */
+	if (orig_waiter && orig_waiter->task == rt_mutex_owner(lock)) {
+		ret = deadlock_detect ? -EDEADLK : 0;
+		goto out_unlock_pi;
+	}
 
 	/*
 	 * Drop out, when the task has no waiters. Note,

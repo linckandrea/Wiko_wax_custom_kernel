@@ -48,6 +48,7 @@ struct logger_entry {
 	__s32		sec;		/* seconds since Epoch */
 	__s32		nsec;		/* nanoseconds */
 	uid_t		euid;		/* effective UID of logger */
+    uid_t       muid;       /* multiuser uid of logger */
 	char		msg[0];		/* the entry's payload */
 };
 
@@ -66,5 +67,6 @@ struct logger_entry {
 #define LOGGER_FLUSH_LOG		_IO(__LOGGERIO, 4) /* flush log */
 #define LOGGER_GET_VERSION		_IO(__LOGGERIO, 5) /* abi version */
 #define LOGGER_SET_VERSION		_IO(__LOGGERIO, 6) /* abi version */
+#define LOGGER_SET_UID			_IO(__LOGGERIO, 7) /* set foreground user id */
 
 #endif /* _LINUX_LOGGER_H */

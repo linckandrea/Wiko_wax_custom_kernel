@@ -1,7 +1,7 @@
 /*
 * imx179.c - imx179 sensor driver
 *
-* Copyright (c) 2012-2013 NVIDIA Corporation. All Rights Reserved.
+* Copyright (c) 2012-2014 NVIDIA Corporation. All Rights Reserved.
 *
 * This file is licensed under the terms of the GNU General Public License
 * version 2. This program is licensed "as is" without any warranty of any
@@ -198,7 +198,6 @@ static struct imx179_reg imx179_3280x2464_i2c[] = {
 	{0x4100, 0x0E},
 	{0x4108, 0x01},
 	{0x4109, 0x7C},
-	//{0x0100, 0x01},
 
 	{IMX179_TABLE_WAIT_MS, IMX179_WAIT_MS},
 	{IMX179_TABLE_END, 0x00}
@@ -268,7 +267,6 @@ static struct imx179_reg imx179_1640x1232_i2c[] = {
 	{0x4100, 0x0E},
 	{0x4108, 0x01},
 	{0x4109, 0x7C},
-	//{0x0100, 0x01},
 
 	{IMX179_TABLE_WAIT_MS, IMX179_WAIT_MS},
 	{IMX179_TABLE_END, 0x00}
@@ -338,7 +336,6 @@ static struct imx179_reg imx179_1920x1080_i2c[] = {
 	{0x4100, 0x0E},
 	{0x4108, 0x01},
 	{0x4109, 0x7C},
-	//{0x0100, 0x01},
 
 	{IMX179_TABLE_WAIT_MS, IMX179_WAIT_MS},
 	{IMX179_TABLE_END, 0x00}
@@ -408,7 +405,6 @@ static struct imx179_reg imx179_1280x720_i2c[] = {
 	{0x4100, 0x0E},
 	{0x4108, 0x01},
 	{0x4109, 0x7C},
-	//{0x0100, 0x01},
 
 	{IMX179_TABLE_WAIT_MS, IMX179_WAIT_MS},
 	{IMX179_TABLE_END, 0x00}
@@ -477,7 +473,6 @@ static struct imx179_reg imx179_640x480_i2c[] = {
 	{0x4100, 0x0E},
 	{0x4108, 0x01},
 	{0x4109, 0x7C},
-	//{0x0100, 0x01},
 
 	{IMX179_TABLE_WAIT_MS, IMX179_WAIT_MS},
 	{IMX179_TABLE_END, 0x00}

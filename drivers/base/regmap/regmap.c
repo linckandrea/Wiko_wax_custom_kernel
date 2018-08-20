@@ -13,7 +13,7 @@
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/export.h>
-#include <linux/mutex.h>
+#include <linux/rtmutex.h>
 #include <linux/err.h>
 
 #define CREATE_TRACE_POINTS

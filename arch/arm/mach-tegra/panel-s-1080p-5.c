@@ -118,10 +118,8 @@ static struct tegra_dc_cmu dsi_s_1080p_5_cmu = {
 	/* csc */
 	{   
 		0x00da, 0x0000, 0x0000,
-
-                0x0000, 0x00d2, 0x0000,
-
-                0x0000, 0x0000, 0x00d0,
+        0x0000, 0x00d2, 0x0000,
+        0x0000, 0x0000, 0x00d0,
 	},
 	/* lut2 maps linear space to sRGB */
 	{
@@ -809,14 +807,14 @@ static void dsi_s_1080p_5_dc_out_init(struct tegra_dc_out *dc)
 	u16 init_count = sizeof(lcm_initialization_setting)/sizeof(struct LCM_setting_table);
 	rebuild_tegra_lcm(lcm_initialization_setting, &dsi_s_1080p_5_pdata,init_count);
 	
-        u16 init_suspend_count = sizeof(lcm_suspend_setting)/sizeof(struct LCM_setting_table);
+    u16 init_suspend_count = sizeof(lcm_suspend_setting)/sizeof(struct LCM_setting_table);
 	rebuild_tegra_lcm_suspend(lcm_suspend_setting, &dsi_s_1080p_5_pdata,init_suspend_count);
 	dc->dsi = &dsi_s_1080p_5_pdata;
 	dc->parent_clk = "pll_d_out0";
 	dc->modes = dsi_s_1080p_5_modes;
 	dc->n_modes = ARRAY_SIZE(dsi_s_1080p_5_modes);
 	dc->enable = dsi_s_1080p_5_enable;
-        dc->hw_reset = dsi_s_1080p_5_hw_reset;
+    dc->hw_reset = dsi_s_1080p_5_hw_reset;
 	dc->disable = dsi_s_1080p_5_disable;
 	dc->width = 62;
 	dc->height = 110;

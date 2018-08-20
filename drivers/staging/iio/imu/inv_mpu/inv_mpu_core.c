@@ -354,7 +354,6 @@ static int inv_switch_engine(struct inv_mpu_state *st, bool en, u32 mask)
 
 	inv_i2c_read(st, reg->pwr_mgmt_1, 1, &mgmt_1);
 	inv_i2c_read(st, reg->pwr_mgmt_2, 1, &data);
-//Ivan	printk("Ivan MPU inv_switch_engine: pwr_mgmt_1[%x], pwr_mgmt_2[%x]\n", mgmt_1, data);
 
 	return 0;
 }
@@ -389,7 +388,6 @@ static int set_power_itg(struct inv_mpu_state *st, bool power_on)
 	u8 data;
 	int result;
 
-//Ivan	printk("Ivan MPU set_power_itg %d\n", power_on);
 	if ((!power_on) == st->chip_config.is_asleep)
 		return 0;
 	reg = &st->reg;
@@ -2962,8 +2960,6 @@ static void inv_mpu_shutdown(struct i2c_client *client)
 	struct inv_reg_map_s *reg;
 	int result;
 
-//Ivan	printk("%s inv_mpu_shutdown\n", st->hw->name);
-	
 	reg = &st->reg;
 	mutex_lock(&indio_dev->mlock);
 	dev_dbg(&client->adapter->dev, "Shutting down %s...\n", st->hw->name);
@@ -3035,7 +3031,7 @@ static int inv_mpu_resume(struct device *dev)
 	int result;
 
 	/* add code according to different request Start */
-//Ivan	printk("%s inv_mpu_resume\n", st->hw->name);
+	pr_debug("%s inv_mpu_resume\n", st->hw->name);
 	mutex_lock(&indio_dev->mlock);
 
 	result = 0;
@@ -3055,6 +3051,7 @@ static int inv_mpu_resume(struct device *dev)
 	/* add code according to different request End */
 
 	mutex_unlock(&st->suspend_resume_lock);
+
 	return result;
 }
 
@@ -3073,15 +3070,8 @@ static int inv_mpu_suspend(struct device *dev)
 	struct inv_mpu_state *st = iio_priv(indio_dev);
 	int result;
 
-/*	
-	struct inv_reg_map_s *reg;
-
-	reg = &st->reg;	
-	u8 data1,data2,data3,data[128];
-	int i;
-*/
 	/* add code according to different request Start */
-//Ivan	printk("%s inv_mpu_suspend\n", st->hw->name);
+	pr_debug("%s inv_mpu_suspend\n", st->hw->name);
 
 	result = 0;
 	if (st->chip_config.dmp_on && st->chip_config.enable) {
@@ -3104,37 +3094,10 @@ static int inv_mpu_suspend(struct device *dev)
 	}
 	/* add code according to different request End */
 	st->suspend_state = true;
-/*	
-	for (i =0; i < 127; i++ )
-	{
-	    inv_i2c_read(st, i, 1, &data[i]);
-	}
-*/	
 	msleep(100);
 	mutex_lock(&st->suspend_resume_lock);
 	st->suspend_state = false;
-/*	
-	inv_i2c_read(st, reg->pwr_mgmt_1, 1, &data1);
-	inv_i2c_read(st, reg->pwr_mgmt_2, 1, &data2);
-	
-	printk("Ivan MPU inv_mpu_suspend: pwr_mgmt_1[%x], pwr_mgmt_2[%x], user_ctrl[%x]\n", data1, data2,data3);
-	printk("Ivan MPU reg000[%x], reg001[%x], reg002[%x], reg003[%x], reg004[%x], reg005[%x], reg006[%x], reg007[%x]\n",data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
-	printk("Ivan MPU reg008[%x], reg009[%x], reg010[%x], reg011[%x], reg012[%x], reg013[%x], reg014[%x], reg015[%x]\n",data[8],data[9],data[10],data[11],data[12],data[13],data[14],data[15]);
-	printk("Ivan MPU reg016[%x], reg017[%x], reg018[%x], reg019[%x], reg020[%x], reg021[%x], reg022[%x], reg023[%x]\n",data[16],data[17],data[18],data[19],data[20],data[21],data[22],data[23]);
-	printk("Ivan MPU reg024[%x], reg025[%x], reg026[%x], reg027[%x], reg028[%x], reg029[%x], reg030[%x], reg031[%x]\n",data[24],data[25],data[26],data[27],data[28],data[29],data[30],data[31]);
-	printk("Ivan MPU reg032[%x], reg033[%x], reg034[%x], reg035[%x], reg036[%x], reg037[%x], reg038[%x], reg039[%x]\n",data[32],data[33],data[34],data[35],data[36],data[37],data[38],data[39]);
-	printk("Ivan MPU reg040[%x], reg041[%x], reg042[%x], reg043[%x], reg044[%x], reg045[%x], reg046[%x], reg047[%x]\n",data[40],data[41],data[42],data[43],data[44],data[45],data[46],data[47]);
-	printk("Ivan MPU reg048[%x], reg049[%x], reg050[%x], reg051[%x], reg052[%x], reg053[%x], reg054[%x], reg055[%x]\n",data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55]);
-	printk("Ivan MPU reg056[%x], reg057[%x], reg058[%x], reg059[%x], reg060[%x], reg061[%x], reg062[%x], reg063[%x]\n",data[56],data[57],data[58],data[59],data[60],data[61],data[62],data[63]);
-	printk("Ivan MPU reg064[%x], reg065[%x], reg066[%x], reg067[%x], reg068[%x], reg069[%x], reg070[%x], reg071[%x]\n",data[64],data[65],data[66],data[67],data[68],data[69],data[70],data[71]);
-	printk("Ivan MPU reg072[%x], reg073[%x], reg074[%x], reg075[%x], reg076[%x], reg077[%x], reg078[%x], reg079[%x]\n",data[72],data[73],data[74],data[75],data[76],data[77],data[78],data[79]);
-	printk("Ivan MPU reg080[%x], reg081[%x], reg082[%x], reg083[%x], reg084[%x], reg085[%x], reg086[%x], reg087[%x]\n",data[80],data[81],data[82],data[83],data[84],data[85],data[86],data[87]);
-	printk("Ivan MPU reg088[%x], reg089[%x], reg090[%x], reg091[%x], reg092[%x], reg093[%x], reg094[%x], reg095[%x]\n",data[88],data[89],data[90],data[91],data[92],data[93],data[94],data[95]);
-	printk("Ivan MPU reg096[%x], reg097[%x], reg098[%x], reg099[%x], reg100[%x], reg101[%x], reg102[%x], reg103[%x]\n",data[96],data[97],data[98],data[99],data[100],data[101],data[102],data[103]);
-	printk("Ivan MPU reg104[%x], reg105[%x], reg106[%x], reg107[%x], reg108[%x], reg109[%x], reg110[%x], reg111[%x]\n",data[104],data[105],data[106],data[107],data[108],data[109],data[110],data[111]);
-	printk("Ivan MPU reg112[%x], reg113[%x], reg114[%x], reg115[%x], reg116[%x], reg117[%x], reg118[%x], reg119[%x]\n",data[112],data[113],data[114],data[115],data[116],data[117],data[118],data[119]);
-	printk("Ivan MPU reg120[%x], reg121[%x], reg122[%x], reg123[%x], reg124[%x], reg125[%x], reg126[%x], reg127[%x]\n",data[120],data[121],data[122],data[123],data[124],data[125],data[126],data[127]);
-*/
+
 	return 0;
 }
 

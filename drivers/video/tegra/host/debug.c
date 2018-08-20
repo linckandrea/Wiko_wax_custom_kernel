@@ -48,6 +48,7 @@ void nvhost_debug_output(struct output *o, const char* fmt, ...)
 	o->fn(o->ctx, o->buf, len);
 }
 
+#ifdef CONFIG_DEBUG_FS
 static int show_channels(struct platform_device *pdev, void *data)
 {
 	struct nvhost_channel *ch;
@@ -115,7 +116,6 @@ static void show_all(struct nvhost_master *m, struct output *o)
 	nvhost_module_idle(m->dev);
 }
 
-#ifdef CONFIG_DEBUG_FS
 static int show_channels_no_fifo(struct platform_device *pdev, void *data)
 {
 	struct nvhost_channel *ch;
@@ -241,16 +241,20 @@ void nvhost_debug_init(struct nvhost_master *master)
 			&nvhost_debug_force_timeout_dump);
 	nvhost_debug_force_timeout_dump = 0;
 }
-#else
-void nvhost_debug_init(struct nvhost_master *master)
-{
-}
-#endif
-
 void nvhost_debug_dump(struct nvhost_master *master)
 {
 	struct output o = {
 		.fn = write_to_printk
 	};
-	show_all(master, &o);
+	show_all_no_fifo(master, &o);
 }
+#else
+void nvhost_debug_init(struct nvhost_master *master)
+{
+}
+void nvhost_debug_dump(struct nvhost_master *master)
+{
+}
+#endif
+
+

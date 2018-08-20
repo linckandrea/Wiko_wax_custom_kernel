@@ -318,7 +318,6 @@ power_on_fail:
 	mutex_unlock(&camera->tegra_camera_lock);
 	return ret;
 }
-
 void turnoff_torch(int on);
 static int tegra_camera_release(struct inode *inode, struct file *file)
 {
@@ -328,7 +327,6 @@ static int tegra_camera_release(struct inode *inode, struct file *file)
 	dev_info(camera->dev, "%s++\n", __func__);
 
 	mutex_lock(&camera->tegra_camera_lock);
-
 	turnoff_torch(0);
 #ifdef CONFIG_THERMAL
 	/* unregister camera thermal cooling device */

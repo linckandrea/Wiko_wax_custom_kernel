@@ -319,15 +319,14 @@ int sysfs_hash_and_remove(struct sysfs_dirent *dir_sd, const void *ns, const cha
 	struct sysfs_addrm_cxt acxt;
 	struct sysfs_dirent *sd;
 
-	if (!dir_sd) {
-		WARN(1, KERN_WARNING "sysfs: can not remove '%s', no directory\n",
-			name);
+	if (!dir_sd)
 		return -ENOENT;
-	}
 
 	sysfs_addrm_start(&acxt, dir_sd);
 
 	sd = sysfs_find_dirent(dir_sd, ns, name);
+	if (sd && (sd->s_ns != ns))
+		sd = NULL;
 	if (sd)
 		sysfs_remove_one(&acxt, sd);
 
