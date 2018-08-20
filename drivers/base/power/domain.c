@@ -2228,7 +2228,7 @@ void pm_genpd_init(struct generic_pm_domain *genpd,
 	list_add(&genpd->gpd_list_node, &gpd_list);
 	mutex_unlock(&gpd_list_lock);
 }
-
+#ifdef CONFIG_DEBUG_FS
 static int __init pm_genpd_debug_init(void)
 {
 	struct dentry *d;
@@ -2246,3 +2246,4 @@ static int __init pm_genpd_debug_init(void)
 	return 0;
 }
 late_initcall(pm_genpd_debug_init);
+#endif
