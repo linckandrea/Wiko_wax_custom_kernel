@@ -97,7 +97,9 @@ int edp_register_manager(struct edp_manager *mgr)
 		INIT_WORK(&mgr->work, promote);
 		mgr->kobj = NULL;
 		edp_manager_add_kobject(mgr);
+#ifdef CONFIG_DEBUG
 		manager_add_dentry(mgr);
+#endif
 		r = 0;
 	}
 	mutex_unlock(&edp_lock);
@@ -159,7 +161,9 @@ int edp_unregister_manager(struct edp_manager *mgr)
 		return -EBUSY;
 	}
 
+#ifdef CONFIG_DEBUG
 	manager_remove_dentry(mgr);
+#endif
 	edp_manager_remove_kobject(mgr);
 	edp_set_governor_unlocked(mgr, NULL);
 	list_del(&mgr->link);
@@ -271,7 +275,9 @@ int register_client(struct edp_manager *mgr, struct edp_client *client)
 	client->ithreshold = client->states[0];
 	client->kobj = NULL;
 	edp_client_add_kobject(client);
+#ifdef CONFIG_DEBUG
 	client_add_dentry(client);
+#endif
 
 	return 0;
 }
@@ -421,7 +427,9 @@ int unregister_client(struct edp_client *client)
 	if (client->num_loans)
 		return -EBUSY;
 
+#ifdef CONFIG_DEBUG
 	client_remove_dentry(client);
+#endif
 	edp_client_remove_kobject(client);
 	close_all_loans(client);
 	mod_request(client, NULL);
