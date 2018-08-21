@@ -29,8 +29,6 @@
 #include "dc_reg.h"
 #include "dc_priv.h"
 
-#define DEBUG
-
 /* return non-zero if constraint is violated */
 static int calc_h_ref_to_sync(const struct tegra_dc_mode *mode, int *href)
 {
