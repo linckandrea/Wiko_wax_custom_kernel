@@ -47,7 +47,7 @@ config TEGRA_DC
 
 config TEGRA_DC_CMU
 	bool
-	default n if ARCH_TEGRA_2x_SOC || ARCH_TEGRA_3x_SOC 
+	default n if ARCH_TEGRA_2x_SOC || ARCH_TEGRA_3x_SOC
 	default y
 
 config TEGRA_DC_WIN_H
