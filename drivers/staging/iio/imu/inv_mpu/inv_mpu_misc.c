@@ -1008,7 +1008,7 @@ static int inv_do_test(struct inv_mpu_state *st, int self_test_flag,
 		if (result)
 			return result;
 		fifo_count = be16_to_cpup((__be16 *)(&data[0]));
-		printk("%s self_test fifo_count - %d\n",
+		pr_debug("%s self_test fifo_count - %d\n",
 			 st->hw->name, fifo_count);
 		packet_count = fifo_count / packet_size;
 		i = 0;
@@ -1026,7 +1026,7 @@ static int inv_do_test(struct inv_mpu_state *st, int self_test_flag,
 					accel_result[j] += vals[j];
 				}
 				ind += BYTES_PER_SENSOR;
-				printk(
+				pr_debug(
 				    "%s self_test accel data - %d %+d %+d %+d \n",
 				    st->hw->name, s, vals[0], vals[1], vals[2]);
 			}

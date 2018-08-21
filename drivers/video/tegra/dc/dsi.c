@@ -3633,7 +3633,6 @@ static void _tegra_dc_dsi_enable(struct tegra_dc *dc)
 		tegra_dsi_setup_initialized_panel(dsi);
 		goto fail;
 	}
-	printk("phil, dc_dsi_enable\n");
 	/* Stop DC stream before configuring DSI registers
 	 * to avoid visible glitches on panel during transition
 	 * from bootloader to kernel driver
@@ -3641,7 +3640,6 @@ static void _tegra_dc_dsi_enable(struct tegra_dc *dc)
 	tegra_dsi_stop_dc_stream(dc, dsi);
 
 	if (dsi->enabled) {
-		printk("phil, dc_dsi_enable, dsi is enabled\n");
 		if (dsi->ulpm) {
 			if (tegra_dsi_exit_ulpm(dsi) < 0) {
 				dev_err(&dc->ndev->dev,
