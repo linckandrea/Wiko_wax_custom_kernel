@@ -1202,8 +1202,10 @@ static int __devexit nct1008_remove(struct i2c_client *client)
 {
 	struct nct1008_data *data = i2c_get_clientdata(client);
 
+#ifdef CONFIG_DEBUG_FS
 	if (data->dent)
 		debugfs_remove(data->dent);
+#endif
 
 	mutex_lock(&data->mutex);
 	data->stop_workqueue = 1;

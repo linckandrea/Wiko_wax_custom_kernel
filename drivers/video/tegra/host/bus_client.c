@@ -458,10 +458,8 @@ static int nvhost_ioctl_channel_submit(struct nvhost_channel_userctx *ctx,
 	memset(g_waitbases, 0, sizeof (g_waitbases));
 #endif
 
-	if (num_syncpt_incrs > host->info.nb_pts) {
-		printk("nvhost_ioctl error: num_syncpt_incrs invalid\n");
+	if (num_syncpt_incrs > host->info.nb_pts)
 		return -EINVAL;
-	}
 
 	job = nvhost_job_alloc(ctx->ch,
 			ctx->hwctx,
@@ -517,7 +515,6 @@ static int nvhost_ioctl_channel_submit(struct nvhost_channel_userctx *ctx,
 		err = copy_from_user(local_waitbases, waitbases,
 			sizeof(u32) * num_syncpt_incrs);
 		if (err) {
-			printk("nvhost_ioctl error: copy_from_user[waitbases]\n");
 			err = -EINVAL;
 			goto fail;
 		}
@@ -546,7 +543,6 @@ static int nvhost_ioctl_channel_submit(struct nvhost_channel_userctx *ctx,
 
 		/* Validate */
 		if (sp.syncpt_id > host->info.nb_pts) {
-			printk("nvhost_ioctl error: sp.syncpt_id invalid\n");
 			err = -EINVAL;
 			goto fail;
 		}
@@ -577,7 +573,6 @@ static int nvhost_ioctl_channel_submit(struct nvhost_channel_userctx *ctx,
 
 	/* Is hwctx_syncpt_idx valid? */
 	if (hwctx_syncpt_idx == -1) {
-		printk("nvhost_ioctl error: hwctx_syncpt_idx invalid\n");
 		err = -EINVAL;
 		goto fail;
 	}
@@ -590,10 +585,8 @@ static int nvhost_ioctl_channel_submit(struct nvhost_channel_userctx *ctx,
 		job->sp[job->hwctx_syncpt_idx].incrs);
 
 	err = nvhost_job_pin(job, &nvhost_get_host(ctx->ch->dev)->syncpt);
-	if (err) {
-		printk("nvhost_ioctl error: nvhost_job_pin, err = %d\n", err);
+	if (err)
 		goto fail;
-	}
 
 	if (args->timeout)
 		job->timeout = min(ctx->timeout, args->timeout);
@@ -602,10 +595,8 @@ static int nvhost_ioctl_channel_submit(struct nvhost_channel_userctx *ctx,
 	job->timeout_debug_dump = ctx->timeout_debug_dump;
 
 	err = nvhost_channel_submit(job);
-	if (err) {
-		printk("nvhost_ioctl error: nvhost_channel_submit, err = %d\n", err);
+	if (err)
 		goto fail_submit;
-	}
 
 	/* Deliver multiple fences back to the userspace */
 	if (fences)
@@ -630,7 +621,6 @@ fail:
 #if !defined(USE_GLOBAL_MEMORY)
 	kfree(local_waitbases);
 #endif
-	printk("nvhost_ioctl return fail\n");
 	return err;
 }
 
@@ -1132,8 +1122,10 @@ int nvhost_client_device_init(struct platform_device *dev)
 	/* store the pointer to this device for channel */
 	ch->dev = dev;
 
+#ifdef CONFIG_DEBUG_FS
 	/* Create debugfs directory for the device */
 	nvhost_device_debug_init(dev);
+#endif
 
 	err = nvhost_channel_init(ch, nvhost_master, pdata->index);
 	if (err)
