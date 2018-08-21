@@ -490,7 +490,7 @@ static void create_longattr(const char *name,
 static __devinit void init_debug(void)
 {
 	if (!core_client.dentry) {
-		WARN_ON(1);
+		//WARN_ON(1);
 		return;
 	}
 
@@ -677,7 +677,7 @@ static __devinit int tegra_sysedp_probe(struct platform_device *pdev)
 	__do_cap_control();
 	mutex_unlock(&core_lock);
 
-	init_debug();
+	//init_debug();
 
 	return 0;
 }
