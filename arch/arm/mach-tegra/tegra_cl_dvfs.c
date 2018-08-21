@@ -1879,6 +1879,7 @@ static const struct file_operations cl_register_fops = {
 	.release	= single_release,
 };
 
+#ifdef CONFIG_DEBUG_FS
 int __init tegra_cl_dvfs_debug_init(struct clk *dfll_clk)
 {
 	struct dentry *cl_dvfs_dentry;
@@ -1932,4 +1933,5 @@ err_out:
 	debugfs_remove_recursive(dfll_clk->dent);
 	return -ENOMEM;
 }
+#endif
 #endif

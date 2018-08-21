@@ -3238,13 +3238,15 @@ static void __init tegra14_dfll_cpu_late_init(struct clk *c)
 
 		use_dfll = CONFIG_TEGRA_USE_DFLL_RANGE;
 		tegra_dvfs_set_dfll_range(cpu->dvfs, use_dfll);
+#ifdef CONFIG_DEBUG_FS
 		tegra_cl_dvfs_debug_init(c);
+#endif;
 		pr_info("Tegra CPU DFLL is initialized\n");
 	}
 #endif
 }
 
-static void tegra14_dfll_clk_init(struct clk *c)
+static void __init tegra14_dfll_clk_init(struct clk *c)
 {
 	c->ops->init = tegra14_dfll_cpu_late_init;
 }
