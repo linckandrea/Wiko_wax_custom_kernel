@@ -1,7 +1,7 @@
 /*
  * arch/arm/mach-tegra/tegra14_edp.c
  *
- * Copyright (c) 2013, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2013-2014, NVIDIA CORPORATION. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -191,14 +191,14 @@ static struct core_edp_entry core_edp_table[] = {
 			},
 			/* balanced profile */
 			{	/* sdmmc edp limit cap is Off */
-				{{ 788, 711 },				
+				{{ 788, 711 },
 				 { 788, 711 },
 				 { 788, 711 },
 				 { 788, 672 },
 				 { 788, 596 },
 				},
 				/* sdmmc edp limit cap is On */
-				{{ 788, 711 },				
+				{{ 788, 711 },
 				 { 788, 653 },
 				 { 788, 653 },
 				 { 788, 653 },
@@ -208,13 +208,13 @@ static struct core_edp_entry core_edp_table[] = {
 			/* favor gpu */
 			{	/* sdmmc edp limit cap is Off */
 				{{ 653, 711 },
-				 { 653, 711 },				 
+				 { 653, 711 },
 				 { 653, 711 },
 				 { 653, 672 },
 				 { 653, 672 },
 				},
 				/* sdmmc edp limit cap is On */
-				{{ 653, 711 },				
+				{{ 653, 711 },
 				 { 653, 692 },
 				 { 653, 692 },
 				 { 653, 672 },
@@ -231,14 +231,14 @@ static struct core_edp_entry core_edp_table[] = {
 			/* favor emc */
 			{	/* sdmmc edp limit cap is Off */
 				{{ 922, 711 },
-				 { 922, 711 },				 
+				 { 922, 711 },
 				 { 922, 711 },
 				 { 922, 672 },
 				 { 922, 672 },
 				},
 				/* sdmmc edp limit cap is On */
 				{{ 922, 711 },
-				 { 922, 711 },				 
+				 { 922, 711 },
 				 { 922, 711 },
 				 { 922, 672 },
 				 { 922, 672 },
@@ -247,14 +247,14 @@ static struct core_edp_entry core_edp_table[] = {
 			/* balanced profile */
 			{	/* sdmmc edp limit cap is Off */
 				{{ 922, 711 },
-				 { 922, 711 },				 
+				 { 922, 711 },
 				 { 922, 711 },
 				 { 922, 672 },
 				 { 922, 672 },
 				},
 				/* sdmmc edp limit cap is On */
 				{{ 922, 711 },
-				 { 922, 711 },				 
+				 { 922, 711 },
 				 { 922, 711 },
 				 { 922, 672 },
 				 { 922, 672 },
@@ -263,14 +263,14 @@ static struct core_edp_entry core_edp_table[] = {
 			/* favor gpu */
 			{	/* sdmmc edp limit cap is Off */
 				{{ 922, 711 },
-				 { 922, 711 },				 
+				 { 922, 711 },
 				 { 922, 711 },
 				 { 922, 672 },
 				 { 922, 672 },
 				},
 				/* sdmmc edp limit cap is On */
 				{{ 922, 711 },
-				 { 922, 711 },				 
+				 { 922, 711 },
 				 { 922, 711 },
 				 { 922, 672 },
 				 { 922, 672 },

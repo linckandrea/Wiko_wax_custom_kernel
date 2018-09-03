@@ -27,7 +27,6 @@
 #include "../../arch/arm/mach-tegra/common.h"
 #include <linux/mfd/max77660/max77660-core.h>
 
-
 struct max77660_chip *max77660_chip;
 
 static struct resource gpio_resources[] = {

@@ -38,8 +38,9 @@
 #include <linux/of_gpio.h>
 
 #include <media/ov5648.h>
-#include <ov5648_otp.h>
+#include "ov5648_otp.h"
 #include <../../../arch/arm/mach-tegra/board-ceres.h>
+
 #if 0
 #define SIZEOF_I2C_TRANSBUF 32
 #define OV5648_REG_GLOBAL_GAIN          0x350a
