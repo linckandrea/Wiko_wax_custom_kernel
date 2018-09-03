@@ -1414,7 +1414,7 @@ static void tegra_speaker_throttle(unsigned int new_state,  void *priv_data)
 	switch (new_state) {
 	case TEGRA_SPK_EDP_NEG_1:
 		/* set codec volume to +12.5 dB, E-1 state */
-		tegra_speaker_edp_set_volume(codec, 0x36, 0x36);
+		tegra_speaker_edp_set_volume(codec, 0x3c, 0x3c);
 		break;
 	case TEGRA_SPK_EDP_ZERO:
 		/* set codec volume to 0 dB, E0 state */
@@ -1462,7 +1462,7 @@ static int tegra_max98090_event_int_spk(struct snd_soc_dapm_widget *w,
 			}
 		} else {
 			/* set codec voulme to +12.5 dB, E-1 state */
-			tegra_speaker_edp_set_volume(codec, 0x36, 0x36);
+			tegra_speaker_edp_set_volume(codec, 0x3c, 0x3c);
 		}
 	} else {
 		ret = edp_update_client_request(

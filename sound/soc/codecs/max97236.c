@@ -511,7 +511,7 @@ static void max97236_keypress(struct max97236_priv *max97236,
 		}
 	}
 
-	if (1 /*verbosity*/)
+	if (verbosity)
 		dev_info(max97236->codec->dev, "%s %s\n",
 				press ? (char *) keystr : "BUTTON",
 				press ? "PRESS" : "RELEASE");
@@ -545,7 +545,7 @@ static void max97236_report_jack_state(struct max97236_priv *max97236,
 		string_copy(string, "NOTHING", MAX_STRING);
 	}
 
-	if (1)
+	if (verbosity)
 		dev_info(max97236->codec->dev, "0x%02X, 0x%02X, 0x%02X - %s\n",
 			status_reg[0],
 			status_reg[1],

@@ -13,7 +13,7 @@ fb-objs                           := $(fb-y)
 
 obj-$(CONFIG_VT)		  += console/
 obj-$(CONFIG_LOGO)		  += logo/
-#obj-y				  += backlight/
+obj-y				  += backlight/
 
 obj-$(CONFIG_EXYNOS_VIDEO)     += exynos/
 
@@ -148,8 +148,6 @@ obj-$(CONFIG_FB_JZ4740)		  += jz4740_fb.o
 obj-$(CONFIG_FB_PUV3_UNIGFX)      += fb-puv3.o
 obj-$(CONFIG_DS90UH925Q_SER)      += ds90uh925q_ser.o
 obj-y                             += tegra/
-#edit by Magnum 2013-11-19
-obj-y	              += backlight/
 
 # Platform or fallback drivers go here
 obj-$(CONFIG_FB_UVESA)            += uvesafb.o

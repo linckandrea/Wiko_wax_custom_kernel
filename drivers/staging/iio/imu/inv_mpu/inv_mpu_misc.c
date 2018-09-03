@@ -58,7 +58,7 @@
 #define DEF_SELFTEST_ACCEL_FS           (2 << 3)
 #define DEF_SELFTEST_GYRO_SENS          (32768 / 250)
 /* wait time before collecting data */
-#define DEF_GYRO_WAIT_TIME              20	//Ivan change from 10 to 20
+#define DEF_GYRO_WAIT_TIME              20
 #define DEF_ST_STABLE_TIME              20
 #define DEF_ST_6500_STABLE_TIME         20
 #define DEF_GYRO_SCALE                  131
@@ -1027,7 +1027,7 @@ static int inv_do_test(struct inv_mpu_state *st, int self_test_flag,
 				}
 				ind += BYTES_PER_SENSOR;
 				pr_debug(
-				    "%s self_test accel data - %d %+d %+d %+d \n",
+				    "%s self_test accel data - %d %+d %+d %+d",
 				    st->hw->name, s, vals[0], vals[1], vals[2]);
 			}
 
@@ -1036,8 +1036,8 @@ static int inv_do_test(struct inv_mpu_state *st, int self_test_flag,
 					(__be16 *)(&data[ind + 2 * j]));
 				gyro_result[j] += vals[j];
 			}
-//			printk("%s self_test gyro data - %d %+d %+d %+d \n",
-//				 st->hw->name, s, vals[0], vals[1], vals[2]);
+			/*pr_debug("%s self_test gyro data - %d %+d %+d %+d",
+				 st->hw->name, s, vals[0], vals[1], vals[2]);*/
 
 			s++;
 			i++;
@@ -1054,9 +1054,7 @@ static int inv_do_test(struct inv_mpu_state *st, int self_test_flag,
 		gyro_result[j] = gyro_result[j] / s;
 		gyro_result[j] *= DEF_ST_PRECISION;
 	}
-	printk(
-	    "%s final self_test accel data - %d %+d %+d %+d \n",
-	    st->hw->name, s, accel_result[0], accel_result[1], accel_result[2]);
+
 	return 0;
 }
 
@@ -1139,10 +1137,10 @@ int inv_hw_self_test(struct inv_mpu_state *st)
 	}
 	if (result)
 		goto test_fail;
-	printk("%s self_test accel bias_regular - %+d %+d %+d\n",
+	pr_debug("%s self_test accel bias_regular - %+d %+d %+d\n",
 		 st->hw->name, accel_bias_regular[0],
 		 accel_bias_regular[1], accel_bias_regular[2]);
-	printk("%s self_test gyro bias_regular - %+d %+d %+d\n",
+	pr_debug("%s self_test gyro bias_regular - %+d %+d %+d\n",
 		 st->hw->name, gyro_bias_regular[0], gyro_bias_regular[1],
 		 gyro_bias_regular[2]);
 
@@ -1164,10 +1162,10 @@ int inv_hw_self_test(struct inv_mpu_state *st)
 	}
 	if (result)
 		goto test_fail;
-	printk("%s self_test accel bias_st - %+d %+d %+d\n",
+	pr_debug("%s self_test accel bias_st - %+d %+d %+d\n",
 		 st->hw->name, accel_bias_st[0], accel_bias_st[1],
 		 accel_bias_st[2]);
-	printk("%s self_test gyro bias_st - %+d %+d %+d\n",
+	pr_debug("%s self_test gyro bias_st - %+d %+d %+d\n",
 		 st->hw->name, gyro_bias_st[0], gyro_bias_st[1],
 		 gyro_bias_st[2]);
 
@@ -2037,4 +2035,3 @@ firmware_write_fail:
 
 	return size;
 }
-

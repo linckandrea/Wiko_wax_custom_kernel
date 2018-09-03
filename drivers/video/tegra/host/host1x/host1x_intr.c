@@ -269,8 +269,8 @@ static void t20_intr_free_host_general_irq(struct nvhost_intr *intr)
 
 	/* master disable for general (not syncpt) host interrupts */
 	writel(0, sync_regs + host1x_sync_intmask_r());
-	free_irq(intr->general_irq, intr);
 
+	free_irq(intr->general_irq, intr);
 }
 
 static void host1x_intr_enable_general_irq(struct nvhost_intr *intr, int irq)

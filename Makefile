@@ -371,10 +371,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
                    -mcpu=cortex-a9 -mtune=cortex-a9 
 
-KBUILD_CFLAGS   += $(call cc-disable-warning,unused-function,)
-KBUILD_CFLAGS   += $(call cc-disable-warning,aggressive-loop-optimizations,)
-KBUILD_CFLAGS   += $(call cc-disable-warning,implicit-function-declaration,)
-
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
