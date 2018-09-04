@@ -2323,7 +2323,6 @@ static void sdhci_timeout_timer(unsigned long data)
 	if (host->mrq) {
 		pr_err("%s: Timeout waiting for hardware "
 			"interrupt.\n", mmc_hostname(host->mmc));
-		sdhci_dumpcmds(host);		//Ivan NV added
 		sdhci_dumpregs(host);
 
 		if (host->data) {
