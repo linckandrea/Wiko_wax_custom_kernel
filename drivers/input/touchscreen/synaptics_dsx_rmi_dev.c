@@ -362,14 +362,18 @@ static ssize_t rmidev_read(struct file *filp, char __user *buf,
 			*f_pos,
 			tmpbuf,
 			count);
+
 	if (retval < 0)
 		goto clean_up;
 
-	if (copy_to_user(buf, tmpbuf, count))
+	if (copy_to_user(buf, tmpbuf, count)) {
 		retval = -EFAULT;
-	else
+	} else {
+        if (*f_pos + count > retval) {
+            retval = count - *f_pos;
+        }
 		*f_pos += retval;
-
+    }
 clean_up:
 	mutex_unlock(&(dev_data->file_mutex));
 
