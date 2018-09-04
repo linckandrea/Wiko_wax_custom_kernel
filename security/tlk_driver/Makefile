@@ -17,7 +17,7 @@
 #
 
 plus_sec := $(call as-instr,.arch_extension sec,+sec)
-AFLAGS_ote_irq.o :=-Wa,-march=armv7-a$(plus_sec)
+AFLAGS_ote_irq.o :=-Wa,-mcpu=cortex-a19$(plus_sec)
 CFLAGS_ote_comms.o :=$(call as-instr,.arch_extension sec,-DREQUIRES_SEC=1)
 CFLAGS_ote_fs.o :=$(call as-instr,.arch_extension sec,-DREQUIRES_SEC=1)
 
