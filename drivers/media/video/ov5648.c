@@ -40,6 +40,7 @@
 #include <media/ov5648.h>
 #include <ov5648_otp.h>
 #include <../../../arch/arm/mach-tegra/board-ceres.h>
+
 #if 0
 #define SIZEOF_I2C_TRANSBUF 32
 #define OV5648_REG_GLOBAL_GAIN          0x350a
@@ -1043,7 +1044,6 @@ static struct ov5648_reg mode_1280x720[] = {
 enum {
 	OV5648_MODE_2592x1944,
 	OV5648_MODE_1920x1080,
-	//OV5648_MODE_1600x1200,
 	OV5648_MODE_1296x972,
 	OV5648_MODE_1280x720,
 };
@@ -1051,7 +1051,6 @@ enum {
 static struct ov5648_reg *mode_table[] = {
 	[OV5648_MODE_2592x1944] = mode_2592x1944,
 	[OV5648_MODE_1920x1080] = mode_1920x1080,
-	//[OV5648_MODE_1600x1200] = mode_1600x1200,
 	[OV5648_MODE_1296x972] = mode_1296x972,
 	[OV5648_MODE_1280x720] = mode_1280x720,
 };
@@ -1151,14 +1150,11 @@ static inline void ov5648_get_coarse_time_regs(
 					u32 coarse_time)
 {
 	regs->addr = 0x3500;
-	//regs->val = (coarse_time >> 16) & 0x0f;
 	regs->val = (coarse_time >> 12) & 0x0f;
 	(regs + 1)->addr = 0x3501;
-	//(regs + 1)->val = (coarse_time >> 8) & 0xff;
 	(regs + 1)->val = (coarse_time >> 4) & 0xff;
 	(regs + 2)->addr = 0x3502;
-	//(regs + 2)->val = coarse_time & 0xf0;
-	(regs + 2)->val = (coarse_time <<4)& 0xf0;
+	(regs + 2)->val = (coarse_time << 4) & 0xf0;
 }
 
 static inline void ov5648_get_gain_reg(
@@ -1239,7 +1235,7 @@ static int ov5648_read_reg_bulk(struct i2c_client *client,
 int OV5648MIPI_read_cmos_sensor(struct ov5648_info *info, u16 reg)
 {
 	u8 val;
-	if(ov5648_read_reg(info->i2c_client, reg, &val))
+	if (ov5648_read_reg(info->i2c_client, reg, &val))
 		return -EIO;
 	else
 		return val;
@@ -1380,8 +1376,6 @@ static int ov5648_set_mode(
 		sensor_mode = OV5648_MODE_2592x1944;
 	else if (mode->xres == 1920 && mode->yres == 1080)
 		sensor_mode = OV5648_MODE_1920x1080;
-	//else if (mode->xres == 1600 && mode->yres == 1200)
-	//	sensor_mode = OV5648_MODE_1600x1200;
 	else if (mode->xres == 1296 && mode->yres == 972)
 		sensor_mode = OV5648_MODE_1296x972;
 	else if (mode->xres == 1280 && mode->yres == 720)
@@ -1399,15 +1393,11 @@ static int ov5648_set_mode(
 	ov5648_get_gain_reg(reg_list + 5, mode->gain);
 
 	err = ov5648_write_table(info, mode_table[sensor_mode],	reg_list, 7);
-
 	if (err) {
 		pr_err("%d: ov5648_set_mode failed", err);
 		return err;
 	}
 	info->mode = sensor_mode;
-	/*
-	update_truly_otp_wb(info, OV5648_RoverG_dec_base, OV5648_BoverG_dec_base);
-	*/
 	return 0;
 }
 static int ov5648_set_frame_length(
@@ -1438,9 +1428,7 @@ static int ov5648_set_coarse_time(
 	u8 *b_ptr = info->i2c_trans_buf;
 
 	ov5648_get_coarse_time_regs(reg_list, coarse_time);
-	pr_info("%s: coarsetime: %u \n",
-			__func__,
-			coarse_time);
+	pr_info("%s: coarsetime: %u\n", __func__, coarse_time);
 
 	*b_ptr++ = reg_list[0].addr >> 8;
 	*b_ptr++ = reg_list[0].addr & 0xff;
@@ -1620,7 +1608,6 @@ static void ov5648_mclk_disable(struct ov5648_info *info)
 static int ov5648_mclk_enable(struct ov5648_info *info)
 {
 	int err;
-
 	dev_dbg(&info->i2c_client->dev, "%s: enable MCLK\n", __func__);
 
 	err = clk_set_rate(info->mclk, 24000000);
