@@ -372,6 +372,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
                    -mcpu=cortex-a9 -mtune=cortex-a9 
 
 KBUILD_CFLAGS   += $(call cc-disable-warning,aggressive-loop-optimizations,)
+KBUILD_CFLAGS   += $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS   += $(call cc-disable-warning,unused-variable,)
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
