@@ -457,6 +457,7 @@ static void avc_audit_post_callback(struct audit_buffer *ab, void *a)
 			   ad->selinux_audit_data->slad->tclass);
 }
 
+#ifdef CONFIG_AUDIT
 /* This is the slow part of avc audit with big stack footprint */
 static noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 		u32 requested, u32 audited, u32 denied,
@@ -495,6 +496,7 @@ static noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 	common_lsm_audit(a, avc_audit_pre_callback, avc_audit_post_callback);
 	return 0;
 }
+#endif
 
 /**
  * avc_audit - Audit the granting or denial of permissions.
@@ -521,6 +523,7 @@ inline int avc_audit(u32 ssid, u32 tsid,
 	       struct av_decision *avd, int result, struct common_audit_data *a,
 	       unsigned flags)
 {
+#ifdef CONFIG_AUDIT
 	u32 denied, audited;
 	denied = requested & ~avd->allowed;
 	if (unlikely(denied)) {
@@ -555,6 +558,9 @@ inline int avc_audit(u32 ssid, u32 tsid,
 	return slow_avc_audit(ssid, tsid, tclass,
 		requested, audited, denied,
 		a, flags);
+#else
+	return 0;
+#endif
 }
 
 /**
