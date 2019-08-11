@@ -232,7 +232,6 @@ void tegra_assert_system_reset(char mode, const char *cmd)
 		if (poweroff)  //ljs move; poweroff, except cmd != null
 			reg |= POWEROFF_MODE;
 	}
-	pr_info("reg=0x%lx \n", reg);
 	writel_relaxed(reg, reset + PMC_SCRATCH0);
 	if (!cmd && pm_power_reset) {
 		pm_power_reset();
