@@ -629,6 +629,7 @@ void tegra_dc_release_dc_out(struct tegra_dc *dc)
 	print(data, buff);				      \
 	} while (0)
 
+#ifdef DEBUG
 static void _dump_regs(struct tegra_dc *dc, void *data,
 		       void (* print)(void *data, const char *str))
 {
@@ -806,7 +807,7 @@ static void _dump_regs(struct tegra_dc *dc, void *data,
 	tegra_dc_put(dc);
 	mutex_unlock(&dc->lock);
 }
-
+#endif
 #undef DUMP_REG
 
 #ifdef DEBUG
@@ -827,22 +828,23 @@ static void dump_regs(struct tegra_dc *dc) {}
 #endif /* DEBUG */
 
 #ifdef CONFIG_DEBUG_FS
-
+#ifdef DEBUG
 static void dbg_regs_print(void *data, const char *str)
 {
 	struct seq_file *s = data;
 
 	seq_printf(s, "%s", str);
 }
-
+#endif
 #undef DUMP_REG
 
 static int dbg_dc_show(struct seq_file *s, void *unused)
 {
+#ifdef DEBUG
 	struct tegra_dc *dc = s->private;
 
 	_dump_regs(dc, s, dbg_regs_print);
-
+#endif
 	return 0;
 }
 

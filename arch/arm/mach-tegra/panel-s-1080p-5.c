@@ -119,9 +119,8 @@ static struct tegra_dc_cmu dsi_s_1080p_5_cmu = {
 	{   
 		0x00da, 0x0000, 0x0000,
 
-                0x0000, 0x00d2, 0x0000,
-
-                0x0000, 0x0000, 0x00d0,
+       		0x0000, 0x00d2, 0x0000,
+        	0x0000, 0x0000, 0x00d0,
 	},
 	/* lut2 maps linear space to sRGB */
 	{
