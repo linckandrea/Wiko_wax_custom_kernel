@@ -265,7 +265,6 @@ static void runnables_stop(void)
 	del_timer_sync(&runnables_timer);
 	cancel_work_sync(&runnables_work);
 	kobject_put(runnables_kobject);
-	kfree(runnables_kobject);
 
 	mutex_unlock(&runnables_lock);
 }
