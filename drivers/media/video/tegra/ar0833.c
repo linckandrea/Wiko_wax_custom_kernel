@@ -211,6 +211,7 @@ static int ar0833_write_bulk_reg(struct i2c_client *client, u8 *data, int len)
 	return err;
 }
 
+#ifdef CONFIG_DEBUG_FS
 static int ar0833_write_reg8(struct i2c_client *client, u16 addr, u8 val)
 {
 	unsigned char data[3];
@@ -225,7 +226,7 @@ static int ar0833_write_reg8(struct i2c_client *client, u16 addr, u8 val)
 	dev_dbg(&client->dev, "0x%x = 0x%x\n", addr, val);
 	return ar0833_write_bulk_reg(client, data, sizeof(data));
 }
-
+#endif
 static int ar0833_write_reg16(struct i2c_client *client, u16 addr, u16 val)
 {
 	unsigned char data[4];

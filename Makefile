@@ -373,9 +373,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
                    -g0 -DNDEBUG
 
 KBUILD_CFLAGS   += $(call cc-disable-warning,aggressive-loop-optimizations,)
-KBUILD_CFLAGS   += $(call cc-disable-warning,unused-variable,)
-KBUILD_CFLAGS   += $(call cc-disable-warning,unused-function,)
-KBUILD_CFLAGS   += $(call cc-disable-warning,maybe-uninitialized,)
 KBUILD_CFLAGS   += $(call cc-disable-warning,undef,)
 
 KBUILD_AFLAGS_KERNEL :=
