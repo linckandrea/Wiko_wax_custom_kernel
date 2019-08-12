@@ -168,8 +168,7 @@ static int update_core_config(unsigned int cpunumber, bool up)
 
 	mutex_lock(tegra_cpu_lock);
 
-	if (cpq_state == TEGRA_CPQ_DISABLED || cpunumber >= nr_cpu_ids ||
-		!cpunumber) {
+	if (cpq_state == TEGRA_CPQ_DISABLED || cpunumber >= nr_cpu_ids) {
 		mutex_unlock(tegra_cpu_lock);
 		return -EINVAL;
 	}
@@ -313,7 +312,6 @@ static void __cpuinit __apply_core_config(void)
 	/* always keep CPU0 online */
 	cpumask_set_cpu(0, &online);
 	cpu_online = *cpu_online_mask;
-        cpumask_clear_cpu(0, &offline);
 
 	if (no_lp == -1) {
 		max_cpus = 1;
