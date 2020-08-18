@@ -1,0 +1,14 @@
+/dts-v1/;
+
+/include/ "tegra148.dtsi"
+
+/ {
+	model = "NVIDIA Tegra148 Ceres evaluation board";
+	compatible = "nvidia,ceres", "nvidia,tegra148";
+
+	host1x {
+		hdmi {
+			status = "okay";
+		};
+	};
+};

@@ -1,0 +1,12 @@
+/dts-v1/;
+
+/include/ "tegra148.dtsi"
+
+/ {
+	model = "NVIDIA Tegra148 Dolak FPGA evaluation board";
+	compatible = "nvidia,dolak", "nvidia,tegra148";
+
+	gpio: gpio@6000d000 {
+		status = "disabled";
+	};
+};

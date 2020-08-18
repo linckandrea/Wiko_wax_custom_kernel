@@ -1,0 +1,14 @@
+/dts-v1/;
+
+/include/ "tegra114.dtsi"
+
+/ {
+	model = "NVIDIA Tegra114 Ceres interposer board";
+	compatible = "nvidia,ceres";
+
+	host1x {
+		hdmi {
+			status = "okay";
+		};
+	};
+};
