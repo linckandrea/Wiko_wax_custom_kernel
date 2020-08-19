@@ -1,10 +1,22 @@
-export ARCH=arm && export SUBARCH=arm
+echo
+echo "Setup"
+echo 
 
-make clean && make mrproper
+mkdir -p out
+export ARCH=arm
+export SUBARCH=arm
+export CROSS_COMPILE=/home/andrea/UberTC-4.9/bin/arm-eabi-
 
-export CROSS_COMPILE=/home/andrea/U4/bin/arm-eabi-
+echo
+echo "Clean up"
+echo 
 
-make tegra_s8515_android_defconfig
+make O=out clean
+make O=out mrproper
 
-make -j4
+echo
+echo "build"
+echo 
 
+make O=out tegra_s8515_android_defconfig
+make O=out -j$(nproc --all)
