@@ -44,7 +44,7 @@
 #include <trace/events/isomgr.h>
 
 #define ISOMGR_SYSFS_VERSION 0	/* increment on change */
-#define ISOMGR_DEBUG 1
+#define ISOMGR_DEBUG 0
 
 #if ISOMGR_DEBUG
 #define SANITY_CHECK_AVAIL_BW() { \
