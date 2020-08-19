@@ -245,8 +245,8 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
-HOSTCXXFLAGS = -O2
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -g0 -DNDEBUG
+HOSTCXXFLAGS = -O2 -g0 -DNDEBUG
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -561,6 +561,15 @@ endif # $(dot-config)
 # Defaults to vmlinux, but the arch makefile usually adds further targets
 all: vmlinux
 
+####################
+# Optimization flags
+####################
+KBUILD_CFLAGS   += $(call cc-option, -mcpu=cortex-a9,) \
+		   $(call cc-option, -mtune=cortex-a9,) \
+		   $(call cc-option, -mfpu=neon,) \
+		   $(call cc-option, -g0,) \
+		   $(call cc-option, -DNDEBUG,)
+		   
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
