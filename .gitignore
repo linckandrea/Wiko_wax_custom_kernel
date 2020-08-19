@@ -63,7 +63,6 @@ include/config
 include/linux/version.h
 include/generated
 arch/*/include/generated
-firmware/rmi4/PR1296077-s3202_30303034.img
 
 # stgit generated dirs
 patches-*
