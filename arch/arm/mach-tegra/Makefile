@@ -164,8 +164,6 @@ obj-$(CONFIG_ARCH_TEGRA_14x_SOC)        += cpuquiet.o
 else
 obj-$(CONFIG_ARCH_TEGRA_3x_SOC)         += cpu-tegra3.o
 endif
-ifeq ($(CONFIG_TEGRA_MPDECISION),y)
-obj-$(CONFIG_ARCH_TEGRA_14x_SOC)         += tegra_mpdecision.o
 endif
 obj-$(CONFIG_TEGRA_PCI)                 += pcie.o
 obj-$(CONFIG_USB_SUPPORT)               += usb_phy.o
