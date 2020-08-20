@@ -496,7 +496,6 @@ static void max17048_get_soc(struct i2c_client *client)
 			chip->soc = MAX17048_BATTERY_FULL;
 		} else if (topoff_count < TOPOFF_TIME_COUNT){
 		    chip->soc = MAX17048_BATTERY_FULL;	//Ivan added
-		    printk("Ivan max17048_get_soc TOP_OFF: status = [%d]; topoff_count[%d]; is_recharged[%d]; charge_complete[%d]; g_soc_special_counter[%d]\n ", chip->status,topoff_count,chip->is_recharged,chip->charge_complete,g_soc_special_counter);
 		    mutex_unlock(&charger_gauge_list_mutex);
 		    return;
 		}
@@ -525,7 +524,6 @@ static void max17048_get_soc(struct i2c_client *client)
 		chip->is_recharged = 0;
 	}
 	mutex_unlock(&charger_gauge_list_mutex);
-	printk("Ivan max17048_get_soc: status = [%d]; topoff_count[%d]; is_recharged[%d]; charge_complete[%d]; vcell[%d]; g_soc_special_counter[%d]\n ", chip->status,topoff_count,chip->is_recharged,chip->charge_complete,chip->vcell,g_soc_special_counter);
 }
 
 static int max17048_read_soc_raw_value(struct battery_gauge_dev *bg_dev)
@@ -570,9 +568,6 @@ static void max17048_work(struct work_struct *work)
 	local_time = (u32)(now.tv_sec - (sys_tz.tz_minuteswest * 60));
 	rtc_time_to_tm(local_time, &tm);
 
-	printk(" @ (%04d-%02d-%02d %02d:%02d:%02d)\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-
-
 	diff = now.tv_sec - g_previous_time.tv_sec;
 	
 #ifdef MAX17048_SOC_AVERAGE
@@ -605,14 +600,10 @@ static void max17048_work(struct work_struct *work)
 #endif
 	g_previous_time = now;
 
-	printk("Ivan time pass = %lu \n",diff);
-	
 	battery_gauge_get_battery_temperature(chip->bg_dev,&temp);
 	rcomp = max17048_read_word(chip->client, 0x0c);
 	g_fg_record_time+=20;
-	printk("\n");
-	printk("Ivan max17048_work vcell[%d], soc[%d], raw_soc[%d], temp[%d], rcomp[%d]\n",chip->vcell,chip->soc,chip->raw_soc,temp,rcomp>>8 );
-	printk("MAX17048_FG:%6d,%6d,%6d,%6d,%6d\n",g_fg_record_time,chip->vcell,temp,chip->raw_soc,rcomp>>8);
+
 	
 //Ivan print debug information for Maxim
 	if (g_fg_record_time == 100)
