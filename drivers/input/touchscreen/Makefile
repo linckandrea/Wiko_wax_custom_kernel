@@ -78,3 +78,4 @@ obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE) += synaptics_dsx_fw_update.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_TEST_REPORTING) += synaptics_dsx_test_reporting.o
 #obj-$(CONFIG_TOUCHSCREEN_SYN_RMI4_SPI)  += s320x/
 #obj-$(CONFIG_TOUCHSCREEN_SYN_RMI4_SPI)  += rmi4/
+obj-y += touchboost.o
