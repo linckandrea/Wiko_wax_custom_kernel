@@ -261,11 +261,6 @@ static int otp_apply_wb(struct ov5648_info *info, unsigned short golden_rg,
 					     gain_b & 0x00ff);
 	}
 
-	printk("[OV5648_OTP] cmp_rg=%d, cmp_bg=%d\n", cmp_rg, cmp_bg);
-	printk("[OV5648_OTP] ratio_r=%d, ratio_g=%d, ratio_b=%d\n", ratio_r,
-	       ratio_g, ratio_b);
-	printk("[OV5648_OTP] gain_r=0x%x, gain_g=0x%x, gain_b=0x%x\n", gain_r,
-	       gain_g, gain_b);
 	return 1;
 }
 
