@@ -528,8 +528,14 @@ static int t14x_set_la(enum tegra_la_id id, unsigned int bw_mbps)
 	if (bw_mbps == 0) {
 		la_to_set = cs->la_max_value;
 	} else {
-		ideal_la = (fifo_size_in_atoms * bytes_per_atom * 1000) /
-				(bw_mbps * cs->ns_per_tick);
+		if (id >= TEGRA_LA_DISPLAY_0A && id <= TEGRA_LA_DISPLAYD) {
+			/* display la margin shold be 1.1 */
+			ideal_la = (100 * fifo_size_in_atoms * bytes_per_atom * 1000) /
+				   (DISPLAY_MARGIN * bw_mbps * cs->ns_per_tick);
+		} else {
+			ideal_la = (fifo_size_in_atoms * bytes_per_atom * 1000) /
+				   (bw_mbps * cs->ns_per_tick);
+		}
 
 		la_to_set = ideal_la -
 			    (ci->expiration_in_ns / cs->ns_per_tick) - 1;
@@ -539,17 +545,6 @@ static int t14x_set_la(enum tegra_la_id id, unsigned int bw_mbps)
 		__func__, id, idx, bw_mbps, la_to_set);
 	la_to_set = (la_to_set < 0) ? 0 : la_to_set;
 	la_to_set = (la_to_set > cs->la_max_value) ? cs->la_max_value : la_to_set;
-
-	/* experimental */
-	if (id >= TEGRA_LA_DISPLAY_0A && id <= TEGRA_LA_DISPLAYD) {
-		if (la_to_set >= 200) {
-			la_to_set = 200;
-
-			if ((id == TEGRA_LA_DISPLAYD || id == TEGRA_LA_DISPLAY_HC) &&
-				la_to_set >= 180)
-				la_to_set = 180;
-		}
-	}
 
 	if (cs->disable_la)
 		return 0;
