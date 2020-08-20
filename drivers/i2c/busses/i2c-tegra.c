@@ -641,7 +641,12 @@ static int tegra_i2c_init(struct tegra_i2c_dev *i2c_dev)
 	u32 clk_divisor = 0;
 	unsigned long timeout = jiffies + HZ;
 
-	tegra_i2c_clock_enable(i2c_dev);
+	err = tegra_i2c_clock_enable(i2c_dev);
+
+	if (err < 0) {
+		dev_err(i2c_dev->dev, "Clock enable failed %d. Unable to init i2c port.\n", err);
+		return err;
+	}
 
 	tegra_periph_reset_assert(i2c_dev->div_clk);
 	udelay(2);
