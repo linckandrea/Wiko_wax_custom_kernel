@@ -26,6 +26,9 @@
 #include <linux/max8831_backlight.h>
 #include <linux/leds.h>
 #include <linux/ioport.h>
+#include <linux/display_state.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
 
 #include "gpio-names.h"
 #include "board-panel.h"
@@ -80,6 +83,13 @@ static tegra_dc_bl_output dsi_j_720p_4_7_bl_response_curve = {
 	239, 240, 241, 242, 243, 244, 246, 247,
 	248, 249, 250, 251, 252, 253, 254, 255
 };
+
+bool display_on = true;
+
+bool is_display_on()
+{
+	return display_on;
+}
 
 static int __maybe_unused dsi_j_720p_4_7_bl_notify(struct device *unused,
 							int brightness)
@@ -297,6 +307,8 @@ static int dsi_j_720p_4_7_enable(struct device *dev)
 
 	gpio_direction_output(dsi_j_720p_4_7_pdata.dsi_panel_bl_en_gpio, 1);
 	is_bl_powered = true;
+    display_on = true;
+	printk(KERN_INFO "State %d\n",display_on);
 	return 0;
 fail:
 	return err;
@@ -381,6 +393,8 @@ static int dsi_j_720p_4_7_disable(void)
 	if (avdd_lcd_3v0_2v8)
 		regulator_disable(avdd_lcd_3v0_2v8);
 
+    display_on = false;
+	printk(KERN_INFO "State %d\n",display_on);
 	return 0;
 }
 
