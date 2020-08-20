@@ -109,7 +109,7 @@ static int nabove_hispeed_delay = ARRAY_SIZE(default_above_hispeed_delay);
 /* 1000000us - 1s */
 #define DEFAULT_BOOSTPULSE_DURATION 250000
 static int boostpulse_duration_val = DEFAULT_BOOSTPULSE_DURATION;
-#define DEFAULT_INPUT_BOOST_FREQ 1190400
+#define DEFAULT_INPUT_BOOST_FREQ 1122000
 int input_boost_freq = DEFAULT_INPUT_BOOST_FREQ;
 
 /*
@@ -120,7 +120,7 @@ int input_boost_freq = DEFAULT_INPUT_BOOST_FREQ;
 /*
  * Default thread migration boost cpufreq
  */
-#define CPU_SYNC_FREQ 1036800
+#define CPU_SYNC_FREQ 1734000
 
 /*
  * Max additional time to wait in idle, beyond timer_rate, at speeds above
