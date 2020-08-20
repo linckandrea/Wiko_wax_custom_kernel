@@ -28,7 +28,7 @@
 #define ABS_DIFF(a, b)   (((a) > (b)) ? ((a) - (b)) : ((b) - (a)))
 
 /* Enable CPU boost when entering IRQ handler */
-#define ENABLE_CPU_BOOST
+//#define ENABLE_CPU_BOOST
 
 static struct workqueue_struct *synaptics_wq;
 

@@ -63,7 +63,7 @@
 #define ENABLE_SMOOTH_LEVEL
 #define ENABLE_SPI_SETTING		0
 /* undef to disable CPU boost while leaving idle mode */
-#define NV_ENABLE_CPU_BOOST
+//#define NV_ENABLE_CPU_BOOST
 
 #define MAX_SPI_FREQ_HZ			50000000
 #define TS_PEN_UP_TIMEOUT		msecs_to_jiffies(50)
