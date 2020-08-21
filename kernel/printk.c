@@ -48,6 +48,8 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/printk.h>
 
+#include "printk_interface.h"
+
 /*
  * Architectures can override it:
  */
@@ -914,6 +916,10 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	size_t plen;
 	char special;
 
+    	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+			return 0;
+    
 	boot_delay_msec();
 	printk_delay();
 
