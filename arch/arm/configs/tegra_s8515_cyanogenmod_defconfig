@@ -567,7 +567,7 @@ CONFIG_USE_OF=y
 CONFIG_ZBOOT_ROM_TEXT=0x0
 CONFIG_ZBOOT_ROM_BSS=0x0
 # CONFIG_ARM_APPENDED_DTB is not set
-CONFIG_CMDLINE="tegraid=14.1.1.0.0 initrd=0x85000000,6724352 mem=512M@2048M vmalloc=256M console=ttyS0,300n8 video=tegrafb earlyprintk max_cpu_cur_ma=20000"
+CONFIG_CMDLINE="tegraid=14.1.1.0.0 initrd=0x85000000,6724352 mem=512M@2048M vmalloc=256M console=ttyS0,300n8 video=tegrafb earlyprintk max_cpu_cur_ma=20000 androidboot.selinux=permissive"
 CONFIG_CMDLINE_FROM_BOOTLOADER=y
 # CONFIG_CMDLINE_EXTEND is not set
 # CONFIG_CMDLINE_FORCE is not set
